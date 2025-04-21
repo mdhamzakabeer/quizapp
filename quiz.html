@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GrowQuiz</title>
     <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  integrity="sha512-+bfeUPrm9m4ZMlZjY1+Pv62R5s6vl6phg9djzUNfaUcfq+5t0jJz2e0p93MeUKlUTY/1vlzRL6k2bWmWvG06Xg=="
-  crossorigin="anonymous"
-  referrerpolicy="no-referrer"
-/>
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-+bfeUPrm9m4ZMlZjY1+Pv62R5s6vl6phg9djzUNfaUcfq+5t0jJz2e0p93MeUKlUTY/1vlzRL6k2bWmWvG06Xg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="flex flex-col min-h-screen bg-gray-50 text-gray-800">
@@ -21,8 +22,8 @@
           <a href="index.html" class="cursor-pointer">GrowQuiz</a>
         </h1>
         <nav class="hidden md:flex space-x-6">
-          <a href="#" class="hover:text-blue-600">Home</a>
-          <a href="#" class="hover:text-blue-600">Quiz</a>
+          <a href="index.html" class="hover:text-blue-600">Home</a>
+          <a href="index.html" class="hover:text-blue-600">Quiz</a>
           <a href="#" class="hover:text-blue-600">Results</a>
           <a href="#" class="hover:text-blue-600">Contact</a>
           <a id="login-nav" href="quiz-form-login.html" class="hover:text-blue-600">Login</a>
@@ -38,23 +39,19 @@
       </div>
     </header>
 
-    <!-- Quiz Section -->
-    <section class="flex-grow container mx-auto px-4 py-10">
-      <div class="bg-white rounded-xl py-6 px-4 md:px-10">
-        <div class="p-6 mb-6 text-center">
-          <label for="subject" class="block mb-2 text-lg font-semibold text-gray-700">Choose a quiz</label>
-          <select id="subject" class="w-full md:w-1/2 mx-auto p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
-            <option value="">-- Select Quiz --</option>
-          </select>
+    <section class="container mx-auto px-4 py-10">
+        <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+          <div id="question-container"></div>
+          
+          <div class="mt-4 text-right">
+            <button id="next-btn" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" disabled>
+              Next
+            </button>
+          </div>
         </div>
-
-        <div class="p-6 mb-6 text-center">
-          <h2 class="text-2xl font-semibold mb-2">Welcome to GrowQuiz!</h2>
-          <p class="text-gray-600 mb-4">Test your knowledge with fun and interactive questions.</p>
-          <button id="start-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Start Quiz</button>
-        </div>
-      </div>
-    </section>
+      </section>
+      
+   
 
     <!-- About Section -->
     <section class="container mx-auto px-4 py-10">
@@ -143,8 +140,10 @@
           <p class="text-sm text-gray-300">📞 +92 3401952337</p>
           <div class="flex space-x-4 mt-4">
             <a href="#" class="hover:text-blue-400 text-xl"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" class="hover:text-blue-400 text-xl"><i class="fab fa-twitter"></i></a>
-             <a href="#" class="hover:text-blue-400 text-xl"><i class="fab fa-instagram"></i></a>
+<a href="#" class="hover:text-blue-400 text-xl"><i class="fab fa-twitter"></i></a>
+<a href="#" class="hover:text-blue-400 text-xl"><i class="fab fa-instagram"></i></a>
+
+            
           </div>
         </div>
       </div>
@@ -152,8 +151,6 @@
         © 2025 GrowQuiz. All rights reserved.
       </div>
     </footer>
-
    <script src="main.js"></script>
     </body>
     </html>
-    
