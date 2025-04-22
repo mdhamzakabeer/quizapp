@@ -40,6 +40,9 @@
           <label for="subject" class="block mb-2 text-lg font-semibold text-gray-700">Choose a quiz</label>
           <select id="subject" class="w-full md:w-1/2 mx-auto p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
             <option value="">-- Select Quiz --</option>
+            <option value="">Maths Basic</option>
+            <option value=""> World History</option>
+            <option value=""> General science</option>
           </select>
         </div>
 
@@ -50,6 +53,46 @@
         </div>
       </div>
     </section>
+
+
+
+<!-- Quiz Cards Section -->
+<section class="container mx-auto px-4 py-10">
+  <h3 class="text-2xl font-bold text-blue-600 text-center mb-6">Available Quizzes</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="card-container">
+    
+    <!-- Quiz Card 1 -->
+    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer">
+      <h4 class="text-lg font-semibold mb-2 text-blue-600">Mathematics Basics</h4>
+      <p class="text-gray-600 text-sm">10 Questions • Easy Level</p>
+    </div>
+
+    <!-- Quiz Card 2 -->
+    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer">
+      <h4 class="text-lg font-semibold mb-2 text-blue-600">World History</h4>
+      <p class="text-gray-600 text-sm">15 Questions • Medium Level</p>
+    </div>
+
+    <!-- Quiz Card 3 -->
+    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer">
+      <h4 class="text-lg font-semibold mb-2 text-blue-600">General Science</h4>
+      <p class="text-gray-600 text-sm">12 Questions • Hard Level</p>
+    </div>
+
+    <!-- Create Quiz Card -->
+    <div onclick="window.location.href='create-quiz.html'" class="bg-gray-100 p-6 rounded-xl shadow border-dashed border-2 border-blue-400 hover:bg-blue-50 transition flex items-center justify-center cursor-pointer">
+      <div class="text-center">
+        <div class="text-4xl text-blue-600 font-bold mb-2">+</div>
+        <p class="text-blue-600 font-semibold">Create New Quiz</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
 
     <!-- About Section -->
     <section class="container mx-auto px-4 py-10">
@@ -148,7 +191,8 @@
       </div>
     </footer>
 
-   <script src="main.js"></script>
+   <script  src="main.js"></script>
+   <script  ></script>
     </body>
     </html>
     
