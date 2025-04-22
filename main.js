@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Redirect if not logged in
   if (!isLoggedIn) {
-    window.location.href = "quiz-form-sign-up.html";
+    window.location.href = "login/signUp/quiz-form-login.html";
     return;
   }
 
@@ -20,38 +20,37 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutNav) {
     logoutNav.addEventListener("click", () => {
       localStorage.removeItem("isLogin");
-      window.location.href = "quiz-form-login.html";
+      window.location.href = "login/signUp/quiz-form-login.html";
     });
   }
+// Fetch dropdown quiz categories
+async function dropdownData() {
+  const response = await fetch("https://opentdb.com/api_category.php");
+  const data = await response.json();
+  const subjectDropdown = document.getElementById("subject");
 
-  // Fetch dropdown quiz categories
-  async function dropdownData() {
-    const response = await fetch("https://opentdb.com/api_category.php");
-    const data = await response.json();
-    const subjectDropdown = document.getElementById("subject");
+  if (subjectDropdown) {
+    data.trivia_categories.forEach((category) => {
+      const option = document.createElement("option");
+      option.value = category.id;
+      option.textContent = category.name;
+      subjectDropdown.appendChild(option);
+    });
+  }
+}
 
-    if (subjectDropdown) {
-      data.trivia_categories.forEach((category) => {
-        const option = document.createElement("option");
-        option.value = category.id;
-        option.textContent = category.name;
-        subjectDropdown.appendChild(option);
-      });
+dropdownData();
+
+// Start Quiz button
+const startBtn = document.getElementById("start-btn");
+if (startBtn) {
+  startBtn.addEventListener("click", () => {
+    const selectedValue = document.getElementById("subject").value;
+    if (!selectedValue) {
+      alert("Please select a quiz category.");
+      return;
     }
-  }
-
-  dropdownData();
-
-  // Start Quiz button
-  const startBtn = document.getElementById("start-btn");
-  if (startBtn) {
-    startBtn.addEventListener("click", () => {
-      const selectedValue = document.getElementById("subject").value;
-      if (!selectedValue) {
-        alert("Please select a quiz category.");
-        return;
-      }
-      window.location.href = `quiz.html?category=${selectedValue}`;
-    });
-  }
+    window.location.href = `quiz.html?category=${selectedValue}`;
+  });
+}
 });

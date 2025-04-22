@@ -65,4 +65,18 @@ function showResult() {
   document.getElementById('next-btn').style.display = 'none';
 }
 
+
+//  quit wala function khud ka
+function quitMcqs() {
+  const quitClick = document.getElementById("quit-click");
+  if (quitClick) {
+    quitClick.addEventListener("click", function (e) {
+      const confirmed = confirm("Are you sure you want to quit the MCQs?");
+      if (!confirmed) {
+        e.preventDefault(); 
+      }
+    });
+  }
+}
+quitMcqs();
 loadQuestions();
