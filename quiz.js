@@ -1,9 +1,3 @@
-const urlParams = new URLSearchParams(window.location.search);
-const categoryId = urlParams.get('category');
-let questions = [];
-let currentIndex = 0;
-let score = 0;
-
 // 🧠 Decode HTML entities
 function decodeHtml(html) {
   const txt = document.createElement("textarea");
@@ -11,8 +5,12 @@ function decodeHtml(html) {
   return txt.value;
 }
 
+let questions = [];
+let currentIndex = 0;
+let score = 0;
+
 // 📥 Load Questions from API
-async function loadQuestions() {
+async function loadQuestions(categoryId) {
   const res = await fetch(`https://opentdb.com/api.php?amount=10&category=${categoryId}&type=multiple`);
   const data = await res.json();
   questions = data.results;
@@ -51,7 +49,7 @@ function showQuestion() {
   backBtn.style.display = currentIndex === 0 ? 'none' : 'inline-block';
 }
 
-//  Handle Next button click
+// ✅ Handle Next button click
 document.getElementById('next-btn').addEventListener('click', () => {
   const selected = document.querySelector('input[name="answer"]:checked');
   if (selected && selected.value === questions[currentIndex].correct_answer) {
@@ -73,21 +71,10 @@ document.getElementById('back-btn').addEventListener('click', () => {
   }
 });
 
-// Show Result
+// 🏁 Show Final Result
 function showResult() {
   const container = document.getElementById('question-container');
-  container.innerHTML = `
-    <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
-    <p class="mt-4 text-lg">Your Score: <strong>${score}</strong> / ${questions.length}</p>
-    <a href="index.html" class="mt-6 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">🔙 Back to Home</a>
-  `;
-  document.getElementById('next-btn').style.display = 'none';
-  document.getElementById('back-btn').style.display = 'none';
-}
 
-function showResult() {
-  const container = document.getElementById('question-container');
-  
   // Prepare result data
   const quizResult = {
     categoryId: categoryId,
@@ -113,8 +100,7 @@ function showResult() {
   document.getElementById('back-btn').style.display = 'none';
 }
 
-
-//  Quit confirmation handler
+// ❌ Quit confirmation handler
 function quitMcqs() {
   const quitClick = document.getElementById("quit-click");
   if (quitClick) {
@@ -127,6 +113,17 @@ function quitMcqs() {
   }
 }
 
-// Initialize
-quitMcqs();
-loadQuestions();
+// 🚀 Initialize everything on window load
+window.addEventListener('load', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryId = urlParams.get('category');
+
+  if (!categoryId) {
+    alert("No category selected. Redirecting to home page...");
+    window.location.href = "index.html";
+    return;
+  }
+
+  quitMcqs();
+  loadQuestions(categoryId);
+});
