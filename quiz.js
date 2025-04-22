@@ -9,12 +9,46 @@ let questions = [];
 let currentIndex = 0;
 let score = 0;
 
-// 📥 Load Questions from API
-async function loadQuestions(categoryId) {
+// 📥 Load Questions from API or Local Storage based on the URL parameters
+async function loadQuestions() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryId = urlParams.get('category');  // category parameter for API-based selection
+  const quizId = urlParams.get('id');            // id parameter for direct access
+
+  if (categoryId) {
+    // If category is provided, fetch data from API
+    await fetchQuestionsFromAPI(categoryId);
+  } else if (quizId) {
+    // If id is provided, fetch data from localStorage
+    await loadQuestionsFromLocalStorage(quizId);
+  } else {
+    alert("No category or id provided. Redirecting to home page...");
+    window.location.href = "index.html";
+  }
+}
+
+// 📥 Fetch Questions from API using categoryId
+async function fetchQuestionsFromAPI(categoryId) {
   const res = await fetch(`https://opentdb.com/api.php?amount=10&category=${categoryId}&type=multiple`);
   const data = await res.json();
   questions = data.results;
   showQuestion();
+}
+
+// 📥 Load Questions from LocalStorage using quizId
+async function loadQuestionsFromLocalStorage(quizId) {
+  let quizData = JSON.parse(localStorage.getItem("quizResults")) || [];
+  let savedQuiz = quizData.find(item => item.quizId === quizId);
+
+  if (savedQuiz) {
+    questions = savedQuiz.questions;
+    currentIndex = savedQuiz.currentIndex || 0;
+    score = savedQuiz.score || 0;
+    showQuestion();
+  } else {
+    alert("Quiz not found in localStorage. Redirecting to home page...");
+    window.location.href = "index.html";
+  }
 }
 
 // 📄 Display the current question
@@ -56,6 +90,10 @@ document.getElementById('next-btn').addEventListener('click', () => {
     score++;
   }
   currentIndex++;
+
+  // Save the current progress in localStorage
+  saveProgress();
+
   if (currentIndex < questions.length) {
     showQuestion();
   } else {
@@ -74,21 +112,8 @@ document.getElementById('back-btn').addEventListener('click', () => {
 // 🏁 Show Final Result
 function showResult() {
   const container = document.getElementById('question-container');
+  saveProgress();
 
-  // Prepare result data
-  const quizResult = {
-    categoryId: categoryId,
-    score: score,
-    total: questions.length,
-    date: new Date().toLocaleString()
-  };
-
-  // Save result to localStorage
-  let savedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
-  savedResults.push(quizResult);
-  localStorage.setItem("quizResults", JSON.stringify(savedResults));
-
-  // Show result message + link to view all results
   container.innerHTML = `
     <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
     <p class="mt-4 text-lg">Your Score: <strong>${score}</strong> / ${questions.length}</p>
@@ -100,30 +125,28 @@ function showResult() {
   document.getElementById('back-btn').style.display = 'none';
 }
 
-// ❌ Quit confirmation handler
-function quitMcqs() {
-  const quitClick = document.getElementById("quit-click");
-  if (quitClick) {
-    quitClick.addEventListener("click", function (e) {
-      const confirmed = confirm("Are you sure you want to quit the MCQs?");
-      if (!confirmed) {
-        e.preventDefault();
-      }
+// Save current progress to localStorage
+function saveProgress() {
+  let quizData = JSON.parse(localStorage.getItem("quizResults")) || [];
+  let savedQuiz = quizData.find(item => item.quizId === quizId);
+
+  if (savedQuiz) {
+    savedQuiz.score = score;
+    savedQuiz.currentIndex = currentIndex;
+  } else {
+    quizData.push({
+      quizId: quizId,
+      questions: questions,
+      score: score,
+      currentIndex: currentIndex,
+      date: new Date().toLocaleString()
     });
   }
+
+  localStorage.setItem("quizResults", JSON.stringify(quizData));
 }
 
 // 🚀 Initialize everything on window load
 window.addEventListener('load', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const categoryId = urlParams.get('category');
-
-  if (!categoryId) {
-    alert("No category selected. Redirecting to home page...");
-    window.location.href = "index.html";
-    return;
-  }
-
-  quitMcqs();
-  loadQuestions(categoryId);
+  loadQuestions();
 });

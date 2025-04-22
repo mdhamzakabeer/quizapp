@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
       card.addEventListener('click', () => {
         localStorage.setItem('selectedSubject', quiz.subject);
-        window.location.href = 'quiz.html';
+        window.location.href = `quiz.html?id=${subjectId}`;
       });
   
       cardContainer.appendChild(card);
@@ -93,7 +93,8 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   
     createCard.addEventListener("click", () => {
-      window.location.href = "create-quiz.html";
+      window.location.href = `create-quiz.html`;
+
     });
   
     cardContainer.appendChild(createCard);
