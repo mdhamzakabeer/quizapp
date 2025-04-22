@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Redirect if not logged in
   if (!isLoggedIn) {
-    window.location.href = "quiz-form-sign-up.html";
+    window.location.href = "login/signUp/quiz-form-login.html";
     return;
   }
 
