@@ -4,14 +4,14 @@ let questions = [];
 let currentIndex = 0;
 let score = 0;
 
-// 🧠 Decode HTML entities
+//  Decode HTML entities
 function decodeHtml(html) {
   const txt = document.createElement("textarea");
   txt.innerHTML = html;
   return txt.value;
 }
 
-// 📥 Load Questions from API
+//  Load Questions from API
 async function loadQuestions() {
   const res = await fetch(`https://opentdb.com/api.php?amount=10&category=${categoryId}&type=multiple`);
   const data = await res.json();
@@ -19,13 +19,12 @@ async function loadQuestions() {
   showQuestion();
 }
 
-// 📄 Display the current question
+//  Display the current question
 function showQuestion() {
   const questionData = questions[currentIndex];
   const container = document.getElementById('question-container');
   const allAnswers = [...questionData.incorrect_answers, questionData.correct_answer];
-  allAnswers.sort(() => Math.random() - 0.5); // Shuffle options
-
+  allAnswers.sort(() => Math.random() - 0.5);
   container.innerHTML = `
     <h2 class="text-xl font-semibold mb-4">Q${currentIndex + 1}: ${decodeHtml(questionData.question)}</h2>
     <form id="options-form" class="space-y-3">
