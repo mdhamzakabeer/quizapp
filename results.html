@@ -1,0 +1,41 @@
+<!-- results.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Quiz Results</title>
+  <script defer src="results.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#6366f1",
+            dark: "#111827",
+            light: "#f9fafb"
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-light min-h-screen text-dark font-sans">
+  <div class="max-w-4xl mx-auto p-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-3xl font-bold text-primary">Your Quiz History</h1>
+      <a href="index.html" class="text-sm bg-primary text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300">🏠 Back to Home</a>
+    </div>
+
+    <!-- Result Cards -->
+    <div id="results-list" class="grid md:grid-cols-2 gap-6"></div>
+
+    <!-- Clear Button -->
+    <div class="mt-10 text-center">
+      <button id="clear-results" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600 transition duration-300">🗑️ Clear All Results</button>
+    </div>
+  </div>
+</body>
+</html>
