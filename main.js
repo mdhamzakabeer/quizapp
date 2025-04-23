@@ -61,26 +61,27 @@ document.addEventListener("DOMContentLoaded", () => {
   
     // ✅ LOCAL STORAGE CARDS
     const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
-    stored.forEach((quiz, index) => {
-      const subjectId = `quiz_${index}_${quiz.subject.toLowerCase().replace(/\s+/g, '_')}`;
-  
+
+    stored.forEach((quiz) => {
       const card = document.createElement("div");
       card.className = "bg-white shadow-md rounded-lg p-4 border cursor-pointer hover:shadow-lg transition";
       card.dataset.subject = quiz.subject;
-      card.id = subjectId;
-  
+      card.dataset.id = quiz.id; // Optional: store ID as a data attribute
+      card.id = quiz.id; // Use quiz.id directly
+    
       card.innerHTML = `
         <h3 class="text-lg font-bold text-blue-600">${quiz.subject}</h3>
-        <p class="text-sm text-gray-500">ID: ${subjectId}</p>
+        <p class="text-sm text-gray-500">ID: ${quiz.id}</p>
       `;
-  
+    
       card.addEventListener('click', () => {
         localStorage.setItem('selectedSubject', quiz.subject);
-        window.location.href = `quiz.html?id=${subjectId}`;
+        window.location.href = `quiz.html?id=${quiz.id}`;
       });
-  
+    
       cardContainer.appendChild(card);
     });
+      
   
     // ✅ CREATE NEW CARD
     const createCard = document.createElement("div");

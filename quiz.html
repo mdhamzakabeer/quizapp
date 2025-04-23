@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GrowQuiz</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
@@ -14,17 +15,21 @@
   <header class="bg-white shadow-md">
     <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
       <h1 class="text-2xl font-bold text-blue-600">GrowQuiz</h1>
-     <a href="index.html" class="text-red-600 font-semibold hover:underline" id="quit-click">Quit</a>
-    </div>
+      
+      <div id="timer" class="text-right text-lg font-semibold text-red-600 mb-4"></div>
+
+      <button id="quit-btn" class="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">❌ Quit</button>
+    </div> 
+  
   </header>
 
   <!-- Centered Quiz Card -->
   <main class="flex-grow flex items-center justify-center px-4">
-    <div class="w-full max-w-xl bg-white p-6 rounded-xl shadow-lg">ooo
+    <div class="w-full max-w-xl bg-white p-6 rounded-xl shadow-lg">
       <div id="question-container" class="mb-6">
         <!-- Questions will be inserted here -->
       </div>
-
+  
       <div class="flex justify-between">
         <button id="back-btn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
           Back
@@ -35,6 +40,7 @@
       </div>
     </div>
   </main>
+  
 
   <script type="module" src="quiz.js"></script>
   <script type="module" src="dummy-quiz.js"></script>
