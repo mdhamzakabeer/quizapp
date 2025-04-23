@@ -102,9 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   
   
-  
-  
-  
   // Show/hide nav items
   
   const loginNav = document.getElementById("login-nav");
@@ -167,16 +164,26 @@ dropdownData();
 const startBtn = document.getElementById("start-btn");
 if (startBtn) {
   startBtn.addEventListener("click", () => {
-    const selectedValue = document.getElementById("subject").value;
+    const dropdown = document.getElementById("subject");
+    const selectedValue = dropdown.value;
+    const selectedText = dropdown.options[dropdown.selectedIndex].text;
+  
     if (!selectedValue) {
       alert("Please select a quiz category.");
       return;
     }
-    window.location.href = `quiz.html?category=${selectedValue}&id=${selectedValue}`;
-
+  
+    // Check if it's a local quiz
+    const isLocal = selectedText.includes("(Local)");
+  
+    // Redirect accordingly
+    if (isLocal) {
+      window.location.href = `quiz.html?type=local&id=${selectedValue}`;
+    } else {
+      window.location.href = `quiz.html?type=api&category=${selectedValue}`;
+    }
   });
-}
-
+}  
 
 
 

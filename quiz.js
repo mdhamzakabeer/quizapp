@@ -17,15 +17,24 @@ window.addEventListener('load', () => {
   const categoryId = urlParams.get("category");
 
   if (quizId) {
-    loadQuestionsFromLocalQuizzes(quizId);
+    const quizzes = JSON.parse(localStorage.getItem("quizzes")) || [];
+    const matchedQuiz = quizzes.find(quiz => quiz.id === quizId);
+  
+    if (matchedQuiz) {
+      loadQuestionsFromLocalQuizzes(quizId);
+    } else if (categoryId) {
+      fetchQuestionsFromAPI(categoryId);
+    } else {
+      alert("Quiz not found. Redirecting to home.");
+      window.location.href = "index.html";
+    }
   } else if (categoryId) {
     fetchQuestionsFromAPI(categoryId);
   } else {
     alert("No quiz ID or category provided.");
     window.location.href = "index.html";
   }
-});
-
+  
 // 🔌 Fetch questions from OpenTDB API
 async function fetchQuestionsFromAPI(categoryId) {
   try {
