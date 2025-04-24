@@ -1,83 +1,63 @@
 let questions = [];
-let currentQuestionIndex = 0;
+let currentIndex = 0;
 let score = 0;
+let quizId = null;
 
-function loadQuestionsFromLocalQuizzes(quizId) {
-    const quizzes = JSON.parse(localStorage.getItem("quizzes")) || [];
-    console.log("All Local Quizzes:", quizzes);
-
-    // Convert both quizId and quiz.id to string for safe comparison
-    const matchedQuiz = quizzes.find(quiz => String(quiz.id) === String(quizId));
-
-    if (matchedQuiz) {
-        console.log("Matched Quiz:", matchedQuiz);
-        return matchedQuiz.questions;
-    } else {
-        console.warn("No matching quiz found for id:", quizId);
-        return [];
-    }
+// Decode HTML entities (API questions are encoded)
+function decodeHtml(html) {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
 }
 
-function showQuestion() {
-    const currentQuestion = questions[currentQuestionIndex];
-    const questionContainer = document.getElementById("question-container");
-    const optionsContainer = document.getElementById("options-container");
+// 🚀 Initialize on page load
+window.addEventListener('load', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  quizId = urlParams.get("id");
+  const categoryId = urlParams.get("category");
 
-    questionContainer.innerText = `Q${currentQuestionIndex + 1}: ${currentQuestion.question}`;
-    optionsContainer.innerHTML = "";
-
-    currentQuestion.options.forEach((option) => {
-        const button = document.createElement("button");
-        button.innerText = option;
-        button.classList.add("option-btn");
-        button.addEventListener("click", () => checkAnswer(option));
-        optionsContainer.appendChild(button);
-    });
-}
-
-function checkAnswer(selectedOption) {
-    const correctAnswer = questions[currentQuestionIndex].correct;
-
-    if (selectedOption === correctAnswer) {
-        score++;
-    }
-
-    currentQuestionIndex++;
-
-    if (currentQuestionIndex < questions.length) {
-        showQuestion();
-    } else {
-        showResult();
-    }
-}
-
-function showResult() {
-    const questionContainer = document.getElementById("question-container");
-    const optionsContainer = document.getElementById("options-container");
-
-    questionContainer.innerText = `Quiz Completed! Your Score: ${score}/${questions.length}`;
-    optionsContainer.innerHTML = "";
-}
-document.addEventListener("DOMContentLoaded", function () {
-  const showQuestion = () => {
-      const currentQuestion = questions[currentQuestionIndex];
-      const questionContainer = document.getElementById("question-container");
-      const optionsContainer = document.getElementById("options-container");
-
-      questionContainer.innerText = `Q${currentQuestionIndex + 1}: ${currentQuestion.question}`;
-      optionsContainer.innerHTML = "";
-
-      currentQuestion.options.forEach((option) => {
-          const button = document.createElement("button");
-          button.innerText = option;
-          button.classList.add("option-btn");
-          button.addEventListener("click", () => checkAnswer(option));
-          optionsContainer.appendChild(button);
-      });
-  };
-
-  // Rest of the code...
+  if (quizId) {
+    loadQuestionsFromLocalQuizzes(quizId);
+  } else if (categoryId) {
+    fetchQuestionsFromAPI(categoryId);
+  } else {
+    alert("No quiz ID or category provided.");
+    window.location.href = "index.html";
+  }
 });
+
+// 🔌 Fetch questions from OpenTDB API
+async function fetchQuestionsFromAPI(categoryId) {
+  try {
+    const res = await fetch(`https://opentdb.com/api.php?amount=10&category=${categoryId}&type=multiple`);
+    const data = await res.json();
+    questions = data.results;
+    currentIndex = 0;
+    score = 0;
+    showQuestion();
+  } catch (error) {
+    console.error("API fetch error:", error);
+    alert("Failed to load questions from API.");
+  }
+}
+
+// 📥 Load questions from locally stored quizzes
+function loadQuestionsFromLocalQuizzes(quizId) {
+  const quizzes = JSON.parse(localStorage.getItem("quizzes")) || [];
+  const matchedQuiz = quizzes.find(quiz => quiz.id === quizId);
+
+  if (matchedQuiz) {
+    console.log(matchedQuiz)
+    questions = matchedQuiz.questions;
+    console.log(questions)
+    currentIndex = 0;
+    score = 0;
+    showQuestion();
+  } else {
+    alert("Quiz not found locally. Redirecting to home.");
+    window.location.href = "index.html";
+  }
+}
 
 // 🧠 Show current question
 
