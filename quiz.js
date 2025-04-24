@@ -58,22 +58,25 @@ function showResult() {
     questionContainer.innerText = `Quiz Completed! Your Score: ${score}/${questions.length}`;
     optionsContainer.innerHTML = "";
 }
-
-// Main Code to load quiz based on ID
 document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const quizId = urlParams.get("id");
+  const showQuestion = () => {
+      const currentQuestion = questions[currentQuestionIndex];
+      const questionContainer = document.getElementById("question-container");
+      const optionsContainer = document.getElementById("options-container");
 
-    if (quizId) {
-        questions = loadQuestionsFromLocalQuizzes(quizId);
-        if (questions.length > 0) {
-            showQuestion();
-        } else {
-            document.getElementById("question-container").innerText = "No questions found for this quiz.";
-        }
-    } else {
-        document.getElementById("question-container").innerText = "Quiz ID not found in URL.";
-    }
+      questionContainer.innerText = `Q${currentQuestionIndex + 1}: ${currentQuestion.question}`;
+      optionsContainer.innerHTML = "";
+
+      currentQuestion.options.forEach((option) => {
+          const button = document.createElement("button");
+          button.innerText = option;
+          button.classList.add("option-btn");
+          button.addEventListener("click", () => checkAnswer(option));
+          optionsContainer.appendChild(button);
+      });
+  };
+
+  // Rest of the code...
 });
 
 // 🧠 Show current question
