@@ -1,55 +1,80 @@
-// Get category ID from URL parameters
-const urlParams = new URLSearchParams(window.location.search);
-const categoryId = urlParams.get('category');
-
-// Initialize quiz state
 let questions = [];
 let currentIndex = 0;
 let score = 0;
+let quizId = null;
 
-// Utility function to decode HTML entities
+// Decode HTML entities (API questions are encoded)
 function decodeHtml(html) {
-  const txt = document.createElement("textarea");
+  const txt = document.createElement('textarea');
   txt.innerHTML = html;
   return txt.value;
 }
 
-// Load Questions from API
-async function loadQuestions() {
-  const container = document.getElementById('question-container');
+// 🚀 Initialize on page load
+window.addEventListener('load', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  quizId = urlParams.get("id");
+  const categoryId = urlParams.get("category");
+
+  if (quizId) {
+    loadQuestionsFromLocalQuizzes(quizId);
+  } else if (categoryId) {
+    fetchQuestionsFromAPI(categoryId);
+  } else {
+    alert("No quiz ID or category provided.");
+    window.location.href = "index.html";
+  }
+});
+
+// 🔌 Fetch questions from OpenTDB API
+async function fetchQuestionsFromAPI(categoryId) {
   try {
-    // Show loading state
-    container.innerHTML = '<p class="text-center">Loading questions...</p>';
-    
     const res = await fetch(`https://opentdb.com/api.php?amount=10&category=${categoryId}&type=multiple`);
     const data = await res.json();
-    
-    if (data.response_code !== 0 || !data.results || data.results.length === 0) {
-      throw new Error('Failed to load questions. Please try again.');
-    }
-    
     questions = data.results;
+    currentIndex = 0;
+    score = 0;
     showQuestion();
   } catch (error) {
-    container.innerHTML = `
-      <div class="text-center">
-        <p class="text-red-600 mb-4">${error.message}</p>
-        <a href="index.html" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Back to Home</a>
-      </div>
-    `;
+    console.error("API fetch error:", error);
+    alert("Failed to load questions from API.");
   }
 }
 
-// Display the current question
+// 📥 Load questions from locally stored quizzes
+function loadQuestionsFromLocalQuizzes(quizId) {
+  const quizzes = JSON.parse(localStorage.getItem("quizzes")) || [];
+  const matchedQuiz = quizzes.find(quiz => quiz.id === quizId);
+
+  if (matchedQuiz) {
+    console.log(matchedQuiz)
+    questions = matchedQuiz.questions;
+    console.log(questions)
+    currentIndex = 0;
+    score = 0;
+    showQuestion();
+  } else {
+    alert("Quiz not found locally. Redirecting to home.");
+    window.location.href = "index.html";
+  }
+}
+
+// 🧠 Show current question
+
 function showQuestion() {
   const questionData = questions[currentIndex];
   const container = document.getElementById('question-container');
-  
-  // Combine and shuffle answers
-  const allAnswers = [...questionData.incorrect_answers, questionData.correct_answer];
-  allAnswers.sort(() => Math.random() - 0.5);
-  
-  // Generate question HTML
+
+  // Determine the correct answer and options dynamically
+  const correct = questionData.correct || questionData.correct_answer;
+  const options = questionData.options || [...questionData.incorrect_answers];
+
+  // Ensure no duplicates of the correct answer
+  const allAnswers = [...options.filter(opt => opt.toLowerCase() !== correct.toLowerCase()), correct.toLowerCase()];
+
+  console.log("Current question:", questionData.question);
+  console.log("Answer options:", allAnswers);
+
   container.innerHTML = `
     <h2 class="text-xl font-semibold mb-4">Q${currentIndex + 1}: ${decodeHtml(questionData.question)}</h2>
     <form id="options-form" class="space-y-3">
@@ -62,27 +87,35 @@ function showQuestion() {
     </form>
   `;
 
-  // Initially disable next button
   document.getElementById('next-btn').disabled = true;
 
-  // Enable next button when an answer is selected
   const form = document.getElementById('options-form');
   form.addEventListener('change', () => {
     document.getElementById('next-btn').disabled = false;
   });
 
-  // Show/hide back button
-  const backBtn = document.getElementById('back-btn');
-  backBtn.style.display = currentIndex === 0 ? 'none' : 'inline-block';
+  document.getElementById('back-btn').style.display = currentIndex === 0 ? 'none' : 'inline-block';
 }
 
-// Handle Next button click
+
+// 👉 Handle "Next" button
+
 document.getElementById('next-btn').addEventListener('click', () => {
   const selected = document.querySelector('input[name="answer"]:checked');
-  if (selected && selected.value === questions[currentIndex].correct_answer) {
-    score++;
+  const currentQuestion = questions[currentIndex];
+  const correctAnswer = (currentQuestion.correct || currentQuestion.correct_answer || "").trim().toLowerCase();
+
+  if (selected) {
+    const selectedAnswer = selected.value.trim().toLowerCase();
+    if (selectedAnswer === correctAnswer) {
+      score++;
+    }
   }
+
   currentIndex++;
+
+  if (quizId) saveProgress();
+
   if (currentIndex < questions.length) {
     showQuestion();
   } else {
@@ -90,7 +123,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
   }
 });
 
-// Handle Back button click
+// 🔙 Handle "Back" button
 document.getElementById('back-btn').addEventListener('click', () => {
   if (currentIndex > 0) {
     currentIndex--;
@@ -98,24 +131,11 @@ document.getElementById('back-btn').addEventListener('click', () => {
   }
 });
 
-// Show Result and save to localStorage
+// 🏁 Show final result
 function showResult() {
   const container = document.getElementById('question-container');
-  
-  // Prepare result data
-  const quizResult = {
-    categoryId: categoryId,
-    score: score,
-    total: questions.length,
-    date: new Date().toLocaleString()
-  };
+  if (quizId) saveProgress();
 
-  // Save result to localStorage
-  let savedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
-  savedResults.push(quizResult);
-  localStorage.setItem("quizResults", JSON.stringify(savedResults));
-
-  // Show result message + link to view all results
   container.innerHTML = `
     <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
     <p class="mt-4 text-lg">Your Score: <strong>${score}</strong> / ${questions.length}</p>
@@ -123,24 +143,44 @@ function showResult() {
     <a href="index.html" class="mt-2 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">🔙 Back to Home</a>
   `;
 
-  // Hide navigation buttons
   document.getElementById('next-btn').style.display = 'none';
   document.getElementById('back-btn').style.display = 'none';
 }
 
-// Quit confirmation handler
-function quitMcqs() {
-  const quitClick = document.getElementById("quit-click");
-  if (quitClick) {
-    quitClick.addEventListener("click", function (e) {
-      const confirmed = confirm("Are you sure you want to quit the MCQs?");
-      if (!confirmed) {
-        e.preventDefault();
-      }
+// 💾 Save quiz progress (local quizzes only)
+function saveProgress() {
+  let quizData = JSON.parse(localStorage.getItem("quizResults")) || [];
+  let savedQuiz = quizData.find(item => item.quizId === quizId);
+
+  if (savedQuiz) {
+    savedQuiz.score = score;
+    savedQuiz.currentIndex = currentIndex;
+  } else {
+    quizData.push({
+      quizId: quizId,
+      questions: questions,
+      score: score,
+      currentIndex: currentIndex,
+      date: new Date().toLocaleString()
     });
   }
-}
 
-// Initialize the quiz
-quitMcqs();
-loadQuestions();
+  localStorage.setItem("quizResults", JSON.stringify(quizData));
+}
+document.getElementById('quit-btn').addEventListener('click', () => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "You will leave the quiz and lose progress!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, quit!',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = "index.html"; // Or wherever you want to go
+    }
+  });
+});
+
