@@ -65,23 +65,29 @@ function showQuestion() {
   const questionData = questions[currentIndex];
   const container = document.getElementById('question-container');
 
-  // Determine the correct answer and options dynamically
+  if (!questionData) {
+    console.error("No question data found!");
+    return;
+  }
+
   const correct = questionData.correct || questionData.correct_answer;
   const options = questionData.options || [...questionData.incorrect_answers];
 
-  // Ensure no duplicates of the correct answer
-  const allAnswers = [...options.filter(opt => opt.toLowerCase() !== correct.toLowerCase()), correct.toLowerCase()];
+  // Insert correct answer at random position
+  if (!options.includes(correct)) {
+    options.splice(Math.floor(Math.random() * (options.length + 1)), 0, correct);
+  }
 
-  console.log("Current question:", questionData.question);
-  console.log("Answer options:", allAnswers);
+  console.log("Question:", decodeHtml(questionData.question));
+  console.log("Options:", options);
 
   container.innerHTML = `
     <h2 class="text-xl font-semibold mb-4">Q${currentIndex + 1}: ${decodeHtml(questionData.question)}</h2>
     <form id="options-form" class="space-y-3">
-      ${allAnswers.map(ans => `
+      ${options.map(opt => `
         <label class="block cursor-pointer">
-          <input type="radio" name="answer" value="${ans}" class="mr-2">
-          ${decodeHtml(ans)}
+          <input type="radio" name="answer" value="${opt}" class="mr-2">
+          ${decodeHtml(opt)}
         </label>
       `).join('')}
     </form>
@@ -96,6 +102,7 @@ function showQuestion() {
 
   document.getElementById('back-btn').style.display = currentIndex === 0 ? 'none' : 'inline-block';
 }
+
 
 
 // 👉 Handle "Next" button
