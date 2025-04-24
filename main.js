@@ -168,11 +168,20 @@ const startBtn = document.getElementById("start-btn");
 if (startBtn) {
   startBtn.addEventListener("click", () => {
     const selectedValue = document.getElementById("subject").value;
+    console.log(selectedValue)
     if (!selectedValue) {
       alert("Please select a quiz category.");
       return;
     }
-    window.location.href = `quiz.html?category=${selectedValue}&id=${selectedValue}`;
+    console.log(typeof selectedValue)
+   if(selectedValue.length<=2){
+    window.location.href=`quiz.html?category=${selectedValue}`;
+    
+   }else{
+    window.location.href=`quiz.html?id=${selectedValue}`;
+    
+   }
+  
 
   });
 }
