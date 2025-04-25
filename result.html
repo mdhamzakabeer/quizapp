@@ -101,18 +101,25 @@
             </div>
           </div>
 
-          <div class="flex flex-col mt-4">
-            <p class="text-gray-400 text-sm">Score</p>
-            <div class="flex items-end justify-between mt-1">
-              <p class="text-2xl font-extrabold text-blue-600">${percent}%</p>
-              <p class="text-gray-500 text-sm">(${score} out of ${total})</p>
-            </div>
-          </div>
+    <!-- Add this inside the card innerHTML -->
+<div class="flex flex-col mt-4">
+  <p class="text-gray-400 text-sm">Score</p>
+  <div class="flex items-end justify-between mt-1">
+    <p class="text-2xl font-extrabold text-blue-600">${percent}%</p>
+    <p class="text-gray-500 text-sm">(${score} out of ${total})</p>
+  </div>
+</div>
 
-          <!-- 🔥 Individual Delete Button -->
-          <button class="text-sm text-red-600 underline mt-3 self-end delete-btn">
-            <i class="fa-solid fa-trash"></i> Delete
-          </button>
+<!-- 🔥 Individual Delete Button -->
+<button class="text-sm text-red-600 underline mt-3 self-end delete-btn">
+  <i class="fa-solid fa-trash"></i> Delete
+</button>
+
+<!-- New Button for Checking MCQs -->
+<a href="checkmcqs.html?id=${result.quizId}" class="text-sm text-blue-600 underline mt-3 self-end">
+  <i class="fa-solid fa-check-circle"></i> Check MCQs
+</a>
+
         `;
 
         resultsContainer.appendChild(card);
