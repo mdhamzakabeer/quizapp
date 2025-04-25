@@ -15,19 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   resultsList.innerHTML = results.reverse().map((r, index) => `
-      <div class="bg-white rounded-2xl shadow-md p-5 border border-gray-200 hover:shadow-lg transition duration-300">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-lg font-semibold text-primary">📄 Result #${results.length - index}</h3>
-          <span class="text-sm text-gray-500">${r.date}</span>
-        </div>
-        <div class="text-sm text-gray-700 space-y-1">
-       <p><span class="font-medium">Score:</span> ${r.score ?? 0} / ${r.total ?? 10}</p>
-       <div class="w-full bg-gray-200 rounded-full h-3 mt-2">
-      <div class="bg-primary h-3 rounded-full" style="width: ${(r.score && r.total) ? (r.score / r.total) * 100 : 0}%"></div>
+  <div class="bg-white rounded-2xl shadow-md p-5 border border-gray-200 hover:shadow-lg transition duration-300">
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="text-lg font-semibold text-primary">📄 Result #${results.length - index}</h3>
+      <span class="text-sm text-gray-500">${r.date}</span>
+    </div>
+    <div class="text-sm text-gray-700 space-y-1">
+      <p><span class="font-medium">Subject:</span> ${r.subject || 'Unknown'}</p>
+      <p><span class="font-medium">Score:</span> ${r.score ?? 0} / ${r.total ?? 10}</p>
+      <div class="w-full bg-gray-200 rounded-full h-3 mt-2">
+        <div class="bg-primary h-3 rounded-full" style="width: ${(r.score && r.total) ? (r.score / r.total) * 100 : 0}%"></div>
       </div>
-        </div>
-      </div>
-    `).join('');
+    </div>
+  </div>
+`).join('');
 
   // Clear All Results
   clearBtn.addEventListener('click', () => {

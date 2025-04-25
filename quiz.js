@@ -2,19 +2,29 @@ let questions = [];
 let currentIndex = 0;
 let score = 0;
 let quizId = null;
+let matchedQuiz = null;
+let subjectName = "Unknown";
 
-// Decode HTML entities (API questions are encoded)
+// Decode HTML entities
 function decodeHtml(html) {
   const txt = document.createElement('textarea');
   txt.innerHTML = html;
   return txt.value;
 }
 
-// 🚀 Initialize on page load
+// Shuffle array
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+// Load on page
 window.addEventListener('load', () => {
   const urlParams = new URLSearchParams(window.location.search);
   quizId = urlParams.get("id");
   const categoryId = urlParams.get("category");
+  const subjectParam = urlParams.get("subject");
+
+  if (subjectParam) subjectName = decodeURIComponent(subjectParam);
 
   if (quizId) {
     loadQuestionsFromLocalQuizzes(quizId);
@@ -26,12 +36,16 @@ window.addEventListener('load', () => {
   }
 });
 
-// 🔌 Fetch questions from OpenTDB API
+// Fetch from API
 async function fetchQuestionsFromAPI(categoryId) {
   try {
     const res = await fetch(`https://opentdb.com/api.php?amount=10&category=${categoryId}&type=multiple`);
     const data = await res.json();
-    questions = data.results;
+    questions = data.results.map(q => ({
+      question: decodeHtml(q.question),
+      correct_answer: decodeHtml(q.correct_answer),
+      incorrect_answers: q.incorrect_answers.map(decodeHtml)
+    }));
     currentIndex = 0;
     score = 0;
     showQuestion();
@@ -41,15 +55,14 @@ async function fetchQuestionsFromAPI(categoryId) {
   }
 }
 
-// 📥 Load questions from locally stored quizzes
+// Load from local quizzes
 function loadQuestionsFromLocalQuizzes(quizId) {
   const quizzes = JSON.parse(localStorage.getItem("quizzes")) || [];
-  const matchedQuiz = quizzes.find(quiz => quiz.id === quizId);
+  matchedQuiz = quizzes.find(quiz => quiz.id === quizId);
 
   if (matchedQuiz) {
-    console.log(matchedQuiz)
     questions = matchedQuiz.questions;
-    console.log(questions)
+    subjectName = matchedQuiz.subject || "Unknown";
     currentIndex = 0;
     score = 0;
     showQuestion();
@@ -59,21 +72,18 @@ function loadQuestionsFromLocalQuizzes(quizId) {
   }
 }
 
-// 🧠 Show current question
-
+// Show question
 function showQuestion() {
   const questionData = questions[currentIndex];
   const container = document.getElementById('question-container');
 
-  // Determine the correct answer and options dynamically
   const correct = questionData.correct || questionData.correct_answer;
   const options = questionData.options || [...questionData.incorrect_answers];
 
-  // Ensure no duplicates of the correct answer
-  const allAnswers = [...options.filter(opt => opt.toLowerCase() !== correct.toLowerCase()), correct.toLowerCase()];
-
-  console.log("Current question:", questionData.question);
-  console.log("Answer options:", allAnswers);
+  const allAnswers = shuffle([
+    ...options.filter(opt => opt.toLowerCase() !== correct.toLowerCase()),
+    correct
+  ]);
 
   container.innerHTML = `
     <h2 class="text-xl font-semibold mb-4">Q${currentIndex + 1}: ${decodeHtml(questionData.question)}</h2>
@@ -97,9 +107,7 @@ function showQuestion() {
   document.getElementById('back-btn').style.display = currentIndex === 0 ? 'none' : 'inline-block';
 }
 
-
-// 👉 Handle "Next" button
-
+// Next
 document.getElementById('next-btn').addEventListener('click', () => {
   const selected = document.querySelector('input[name="answer"]:checked');
   const currentQuestion = questions[currentIndex];
@@ -123,7 +131,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
   }
 });
 
-// 🔙 Handle "Back" button
+// Back
 document.getElementById('back-btn').addEventListener('click', () => {
   if (currentIndex > 0) {
     currentIndex--;
@@ -131,10 +139,25 @@ document.getElementById('back-btn').addEventListener('click', () => {
   }
 });
 
-// 🏁 Show final result
+// Result
 function showResult() {
   const container = document.getElementById('question-container');
   if (quizId) saveProgress();
+
+  const resultObj = {
+    quizId,
+    subject: subjectName,
+    questions,
+    score,
+    currentIndex,
+    total: questions.length,
+    date: new Date().toLocaleString()
+  };
+
+  // Even for API quizzes, save the result
+  let results = JSON.parse(localStorage.getItem("quizResults")) || [];
+  results.push(resultObj);
+  localStorage.setItem("quizResults", JSON.stringify(results));
 
   container.innerHTML = `
     <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
@@ -147,28 +170,31 @@ function showResult() {
   document.getElementById('back-btn').style.display = 'none';
 }
 
-// 💾 Save quiz progress (local quizzes only)
+// Save local quiz progress
 function saveProgress() {
   let quizData = JSON.parse(localStorage.getItem("quizResults")) || [];
   let savedQuiz = quizData.find(item => item.quizId === quizId);
 
-
   if (savedQuiz) {
     savedQuiz.score = score;
     savedQuiz.currentIndex = currentIndex;
+    savedQuiz.date = new Date().toLocaleString();
   } else {
     quizData.push({
       quizId: quizId,
-      subject:quizData,
+      subject: subjectName,
       questions: questions,
       score: score,
       currentIndex: currentIndex,
+      total: questions.length,
       date: new Date().toLocaleString()
     });
   }
 
   localStorage.setItem("quizResults", JSON.stringify(quizData));
 }
+
+// Quit
 document.getElementById('quit-btn').addEventListener('click', () => {
   Swal.fire({
     title: 'Are you sure?',
@@ -181,8 +207,7 @@ document.getElementById('quit-btn').addEventListener('click', () => {
     cancelButtonText: 'Cancel'
   }).then((result) => {
     if (result.isConfirmed) {
-      window.location.href = "index.html"; // Or wherever you want to go
+      window.location.href = "index.html";
     }
   });
 });
-
