@@ -5,32 +5,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GrowQuiz</title>
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- SweetAlert2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="bg-gray-100 flex flex-col min-h-screen">
 
-  <!-- Header with title and quit button only -->
+  <!-- Header -->
   <header class="bg-white shadow-md">
     <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
       <h1 class="text-2xl font-bold text-blue-600">GrowQuiz</h1>
-      
-      <div id="timer" class="text-right text-lg font-semibold text-red-600 mb-4"></div>
 
-      <button id="quit-btn" class="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">❌ Quit</button>
-    </div> 
-  
+      <div class="text-right">
+        <div id="timer" class="text-lg font-semibold text-red-600"></div>
+        <button id="quit-btn" class="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+          ❌ Quit
+        </button>
+      </div>
+    </div>
   </header>
 
-  <!-- Centered Quiz Card -->
-  <main class="flex-grow flex items-center justify-center px-4">
+  <!-- Main Quiz Container -->
+  <main class="flex-grow flex items-center justify-center px-4 py-8">
     <div class="w-full max-w-xl bg-white p-6 rounded-xl shadow-lg">
       <div id="question-container" class="mb-6">
-        <!-- Questions will be inserted here -->
+        <!-- Quiz questions will be injected here -->
       </div>
-  
-      <div class="flex justify-between">
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between mt-4">
         <button id="back-btn" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">
           Back
         </button>
@@ -38,10 +45,17 @@
           Next
         </button>
       </div>
+
+      <!-- Submit Button -->
+      <div class="text-center mt-6">
+        <button id="submit-btn" class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 hidden">
+          ✅ Submit Quiz
+        </button>
+      </div>
     </div>
   </main>
-  
 
+  <!-- Scripts -->
   <script type="module" src="quiz.js"></script>
   <script type="module" src="dummy-quiz.js"></script>
 </body>

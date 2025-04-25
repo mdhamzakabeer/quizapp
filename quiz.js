@@ -10,21 +10,70 @@ function decodeHtml(html) {
   return txt.value;
 }
 
-// 🚀 Initialize on page load
-window.addEventListener('load', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  quizId = urlParams.get("id");
-  const categoryId = urlParams.get("category");
+// quiz.js
 
-  if (quizId) {
-    loadQuestionsFromLocalQuizzes(quizId);
-  } else if (categoryId) {
-    fetchQuestionsFromAPI(categoryId);
-  } else {
-    alert("No quiz ID or category provided.");
-    window.location.href = "index.html";
-  }
+const urlParams = new URLSearchParams(window.location.search);
+const category = urlParams.get("category");
+
+const quizContainer = document.getElementById("quiz-container");
+const submitBtn = document.getElementById("submit-btn");
+const resultContainer = document.getElementById("result-container");
+
+let correctAnswers = 0;
+
+fetch(`https://opentdb.com/api.php?amount=10&category=${category}&type=multiple`)
+  .then(res => res.json())
+  .then(data => {
+    // ✅ Store all correct answers in a global variable
+    window.correctAnswers = data.results.map(q => q.correct_answer);
+
+    // ✅ Now start rendering the questions
+    data.results.forEach((questionObj, index) => {
+      const questionCard = document.createElement("div");
+      questionCard.classList.add("question-card");
+
+      const question = document.createElement("h3");
+      question.innerHTML = `${index + 1}. ${questionObj.question}`;
+
+      const answers = [...questionObj.incorrect_answers];
+      const correct = questionObj.correct_answer;
+      const randomIndex = Math.floor(Math.random() * 4);
+      answers.splice(randomIndex, 0, correct); // insert correct at random
+
+      const options = answers.map(answer => {
+        return `
+          <label>
+            <input type="radio" name="q${index}" value="${answer}">
+            ${answer}
+          </label>
+        `;
+      }).join("<br>");
+
+      questionCard.innerHTML = `${question.outerHTML}<div>${options}</div>`;
+      quizContainer.appendChild(questionCard);
+    });
+  });
+
+// Handle submission
+submitBtn.addEventListener("click", () => {
+  const questions = document.querySelectorAll(".question-card");
+
+  correctAnswers = 0;
+  questions.forEach((question, index) => {
+    const selected = question.querySelector(`input[name="q${index}"]:checked`);
+    const correctAnswer = question.querySelector(`input[value="${decodeURIComponent(window.correctAnswer)}"]`);
+    const correct = decodeURIComponent(window.correctAnswers[index]);
+
+    if (selected && selected.value === correct) {
+      correctAnswers++;
+    }
+  });
+
+  resultContainer.innerHTML = `
+    <h2 class="text-xl font-bold mt-4 text-green-600">You got ${correctAnswers} out of ${questions.length} correct!</h2>
+  `;
 });
+
 
 // 🔌 Fetch questions from OpenTDB API
 async function fetchQuestionsFromAPI(categoryId) {
