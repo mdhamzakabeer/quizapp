@@ -163,13 +163,13 @@ function saveProgress() {
   } else {
     quizData.push({
       quizId: quizId,
-      subject:quizData,
+      categoryId: quizId, // or categoryId if available separately
       questions: questions,
       score: score,
-      currentIndex: currentIndex,
+      total: questions.length,
       date: new Date().toLocaleString()
     });
-  }
+  }    
 
   localStorage.setItem("quizResults", JSON.stringify(quizData));
 }
