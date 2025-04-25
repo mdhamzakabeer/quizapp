@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Check MCQs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
+    <h1 class="text-3xl font-bold text-center text-purple-600 mb-6">🧐 Check Your MCQs</h1>
+    <div id="score-summary" class="mb-6 text-center text-lg font-semibold text-gray-700"></div>
+    <div id="questions-container" class="space-y-6"></div>
+    <div class="text-center mt-10">
+      <a href="result.html" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">🔙 Back to Results</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const quizId = urlParams.get("id");
+      const allResults = JSON.parse(localStorage.getItem("quizResults")) || [];
+      const result = allResults.find(r => r.quizId === quizId);
+
+      if (!result) {
+        document.getElementById("questions-container").innerHTML = `
+          <p class="text-center text-gray-500 text-lg">No data found for this quiz.</p>
+        `;
+        return;
+      }
+
+      const container = document.getElementById("questions-container");
+      let correctCount = 0;
+      let wrongCount = 0;
+
+      result.questions.forEach((q, index) => {
+        const questionText = q.question;
+        const correctAnswer = (q.correct || q.correct_answer || "").trim();
+        const userAnswer = q.userSelected || ""; // We'll store this from `quiz.js` next
+
+        const isCorrect = userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
+        if (userAnswer) isCorrect ? correctCount++ : wrongCount++;
+
+        const options = q.options || [...q.incorrect_answers, correctAnswer];
+        const allOptions = [...new Set(options)].sort();
+
+        const optionList = allOptions.map(opt => {
+          const isSelected = opt === userAnswer;
+          const isRight = opt === correctAnswer;
+
+          let bgClass = "bg-white";
+          let icon = "";
+
+          if (isRight) {
+            bgClass = "bg-green-100";
+            icon = `<i class="fa-solid fa-check text-green-600 ms-2"></i>`;
+          }
+
+          if (isSelected && !isRight) {
+            bgClass = "bg-red-100";
+            icon = `<i class="fa-solid fa-xmark text-red-600 ms-2"></i>`;
+          }
+
+          return `<li class="p-2 rounded ${bgClass}">${opt} ${icon}</li>`;
+        }).join("");
+
+        container.innerHTML += `
+          <div class="p-4 bg-gray-50 border rounded-xl shadow-sm">
+            <p class="font-semibold mb-2">Q${index + 1}: ${questionText}</p>
+            <ul class="space-y-2">${optionList}</ul>
+          </div>
+        `;
+      });
+
+      document.getElementById("score-summary").innerHTML = `
+        ✅ Correct: ${correctCount} &nbsp;&nbsp;&nbsp; ❌ Incorrect: ${wrongCount} &nbsp;&nbsp;&nbsp;
+        🧮 Total: ${result.questions.length}
+      `;
+    });
+  </script>
+</body>
+</html>

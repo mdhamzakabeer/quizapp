@@ -122,6 +122,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
 
   if (selected) {
     const selectedAnswer = selected.value.trim().toLowerCase();
+    currentQuestion.userSelected = selected.value; // **Add this line** to store user's selected answer
     if (selectedAnswer === correctAnswer) {
       score++;
     }
@@ -137,6 +138,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
     showResult();
   }
 });
+
 
 // Back
 document.getElementById('back-btn').addEventListener('click', () => {
