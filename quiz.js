@@ -107,10 +107,14 @@ document.getElementById('next-btn').addEventListener('click', () => {
 
   if (selected) {
     const selectedAnswer = selected.value.trim().toLowerCase();
+    questions[currentIndex].userAnswer = selectedAnswer;
     if (selectedAnswer === correctAnswer) {
       score++;
     }
+  } else {
+    questions[currentIndex].userAnswer = ""; 
   }
+  
 
   currentIndex++;
 
@@ -159,13 +163,14 @@ function saveProgress() {
   } else {
     quizData.push({
       quizId: quizId,
-      categoryId: quizId, // or categoryId if available separately
+      subject:quizData,
       questions: questions,
       score: score,
-      total: questions.length,
+      currentIndex: currentIndex,
       date: new Date().toLocaleString()
     });
-  }    
+  }
+
   localStorage.setItem("quizResults", JSON.stringify(quizData));
 }
 document.getElementById('quit-btn').addEventListener('click', () => {

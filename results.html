@@ -1,55 +1,18 @@
+<!-- result.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Quiz Results</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script defer src="result.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
-  <div class="w-full max-w-3xl bg-white shadow-2xl rounded-2xl p-6 space-y-6">
-    <h1 class="text-3xl font-bold text-center text-blue-600">Quiz Results</h1>
-    <div id="resultsContainer" class="space-y-4">
-      <!-- Results will be injected here -->
-    </div>
+<body class="bg-gray-100 text-gray-800 p-8">
+  <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+    <h1 class="text-3xl font-bold mb-6 text-purple-700">📜 Quiz Results</h1>
+    <div id="results-container"></div>
+    <a href="index.html" class="mt-6 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">🔙 Back to Home</a>
   </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const resultsContainer = document.getElementById("resultsContainer");
-
-      // Fetch results from localStorage
-      const storedResults = localStorage.getItem("quizResults");
-      const results = storedResults ? JSON.parse(storedResults) : [];
-
-      if (results.length === 0) {
-        resultsContainer.innerHTML = `
-          <div class="text-center text-gray-500 text-lg">
-            No quiz results found.
-          </div>`;
-        return;
-      }
-
-      // Create cards for each result
-      results.forEach((result, index) => {
-        const card = document.createElement("div");
-        card.className = "bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow";
-
-        card.innerHTML = `
-          <div class="flex justify-between items-center">
-            <div>
-              <h2 class="text-xl font-semibold text-gray-800">${result.subject || 'Unknown Subject'}</h2>
-              <p class="text-gray-600 text-sm">Date: ${result.date || 'Unknown'}</p>
-            </div>
-            <div class="text-right">
-              <span class="text-lg font-bold text-green-600">${result.score ?? 0}</span>
-              <span class="text-sm text-gray-600">/ ${result.total ?? 10}</span>
-            </div>
-          </div>
-        `;
-
-        resultsContainer.appendChild(card);
-      });
-    });
-  </script>
 </body>
 </html>

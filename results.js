@@ -1,41 +1,40 @@
-// results.js
-document.addEventListener('DOMContentLoaded', () => {
-  const resultsList = document.getElementById('results-list');
-  const clearBtn = document.getElementById('clear-results');
+// result.js
+
+// Decode HTML entities
+function decodeHtml(html) {
+  const txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+}
+
+window.addEventListener("load", () => {
+  const resultBox = document.getElementById("results-container");
   const results = JSON.parse(localStorage.getItem("quizResults")) || [];
 
   if (results.length === 0) {
-    resultsList.innerHTML = `
-        <div class="text-center col-span-2 text-gray-600 text-lg">
-          😕 No quiz attempts found. Take a quiz to see results here.
-        </div>
-      `;
-    clearBtn.style.display = 'none';
+    resultBox.innerHTML = `<p class="text-lg">No quiz results found. Please attempt a quiz first.</p>`;
     return;
   }
 
-  resultsList.innerHTML = results.reverse().map((r, index) => `
-      <div class="bg-white rounded-2xl shadow-md p-5 border border-gray-200 hover:shadow-lg transition duration-300">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="text-lg font-semibold text-primary">📄 Result #${results.length - index}</h3>
-          <span class="text-sm text-gray-500">${r.date}</span>
-        </div>
-        <div class="text-sm text-gray-700 space-y-1">
-       <p><span class="font-medium">Score:</span> ${r.score ?? 0} / ${r.total ?? 10}</p>
-       <div class="w-full bg-gray-200 rounded-full h-3 mt-2">
-       <div class="bg-primary h-3 rounded-full" style="width: ${(r.score && r.total) ? (r.score / r.total) * 100 : 0}%"></div>
-       </div>
+  // Show latest result on top
+  const latest = results[results.length - 1];
+  resultBox.innerHTML = `
+    <p class="text-lg font-semibold mb-2 text-green-600">✅ Score: ${latest.score} / ${latest.questions.length}</p>
+    <p class="text-sm text-gray-500 mb-4">🕒 Attempted on: ${latest.date}</p>
+    <div class="space-y-4">
+      ${latest.questions.map((q, index) => {
+        const correct = (q.correct || q.correct_answer || "").toLowerCase().trim();
+        const userAnswer = (q.userAnswer || "").toLowerCase().trim();
+        const isCorrect = correct === userAnswer;
 
-        </div>
-      </div>
-    `).join('');
-
-  // Clear All Results
-  clearBtn.addEventListener('click', () => {
-    const confirmClear = confirm("Are you sure you want to delete all quiz results?");
-    if (confirmClear) {
-      localStorage.removeItem("quizResults");
-      location.reload();
-    }
-  });
+        return `
+          <div class="p-4 border rounded ${isCorrect ? 'bg-green-50' : 'bg-red-50'}">
+            <p class="font-medium">Q${index + 1}: ${decodeHtml(q.question)}</p>
+            <p class="mt-1">✅ Correct: <strong>${decodeHtml(correct)}</strong></p>
+            <p class="mt-1">🧑 Your Answer: <strong class="${isCorrect ? 'text-green-600' : 'text-red-600'}">${decodeHtml(userAnswer || "Not Answered")}</strong></p>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
 });
