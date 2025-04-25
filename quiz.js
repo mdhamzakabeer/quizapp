@@ -114,7 +114,7 @@ function showQuestion() {
   document.getElementById('back-btn').style.display = currentIndex === 0 ? 'none' : 'inline-block';
 }
 
-// Next
+// next
 document.getElementById('next-btn').addEventListener('click', () => {
   const selected = document.querySelector('input[name="answer"]:checked');
   const currentQuestion = questions[currentIndex];
@@ -122,7 +122,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
 
   if (selected) {
     const selectedAnswer = selected.value.trim().toLowerCase();
-    currentQuestion.userSelected = selected.value; // **Add this line** to store user's selected answer
+    currentQuestion.userSelected = selected.value; // Store the selected answer
     if (selectedAnswer === correctAnswer) {
       score++;
     }
@@ -138,6 +138,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
     showResult();
   }
 });
+
 
 
 // Back
@@ -188,11 +189,12 @@ function saveProgress() {
     savedQuiz.score = score;
     savedQuiz.currentIndex = currentIndex;
     savedQuiz.date = new Date().toLocaleString();
+    savedQuiz.questions = questions;  // Save the questions with user answers
   } else {
     quizData.push({
       quizId: quizId,
       subject: subjectName,
-      questions: questions,
+      questions: questions,  // Save the questions with user answers
       score: score,
       currentIndex: currentIndex,
       total: questions.length,

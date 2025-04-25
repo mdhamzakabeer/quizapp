@@ -19,66 +19,67 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const quizId = urlParams.get("id");
-      const allResults = JSON.parse(localStorage.getItem("quizResults")) || [];
-      const result = allResults.find(r => r.quizId === quizId);
+  const urlParams = new URLSearchParams(window.location.search);
+  const quizId = urlParams.get("id");
+  const allResults = JSON.parse(localStorage.getItem("quizResults")) || [];
+  const result = allResults.find(r => r.quizId === quizId);
 
-      if (!result) {
-        document.getElementById("questions-container").innerHTML = `
-          <p class="text-center text-gray-500 text-lg">No data found for this quiz.</p>
-        `;
-        return;
+  if (!result) {
+    document.getElementById("questions-container").innerHTML = `
+      <p class="text-center text-gray-500 text-lg">No data found for this quiz.</p>
+    `;
+    return;
+  }
+
+  const container = document.getElementById("questions-container");
+  let correctCount = 0;
+  let wrongCount = 0;
+
+  result.questions.forEach((q, index) => {
+    const questionText = q.question;
+    const correctAnswer = (q.correct || q.correct_answer || "").trim();
+    const userAnswer = q.userSelected || ""; // Get the user's selected answer
+
+    const isCorrect = userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
+    if (userAnswer) isCorrect ? correctCount++ : wrongCount++;
+
+    const options = [...q.incorrect_answers, correctAnswer];
+    const allOptions = shuffle(options);  // Shuffle the options
+
+    const optionList = allOptions.map(opt => {
+      const isSelected = opt === userAnswer;  // Check if this option was selected by the user
+      const isRight = opt === correctAnswer;  // Check if this option is correct
+
+      let bgClass = "bg-white";
+      let icon = "";
+
+      if (isRight) {
+        bgClass = "bg-green-100";  // Correct answer background
+        icon = `<i class="fa-solid fa-check text-green-600 ms-2"></i>`;
       }
 
-      const container = document.getElementById("questions-container");
-      let correctCount = 0;
-      let wrongCount = 0;
+      if (isSelected && !isRight) {
+        bgClass = "bg-red-100";  // Incorrect answer background
+        icon = `<i class="fa-solid fa-xmark text-red-600 ms-2"></i>`;
+      }
 
-      result.questions.forEach((q, index) => {
-        const questionText = q.question;
-        const correctAnswer = (q.correct || q.correct_answer || "").trim();
-        const userAnswer = q.userSelected || ""; // We'll store this from `quiz.js` next
+      return `<li class="p-2 rounded ${bgClass}">${opt} ${icon}</li>`;
+    }).join("");
 
-        const isCorrect = userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase();
-        if (userAnswer) isCorrect ? correctCount++ : wrongCount++;
+    container.innerHTML += `
+      <div class="p-4 bg-gray-50 border rounded-xl shadow-sm">
+        <p class="font-semibold mb-2">Q${index + 1}: ${questionText}</p>
+        <ul class="space-y-2">${optionList}</ul>
+      </div>
+    `;
+  });
 
-        const options = q.options || [...q.incorrect_answers, correctAnswer];
-        const allOptions = [...new Set(options)].sort();
+  document.getElementById("score-summary").innerHTML = `
+    ✅ Correct: ${correctCount} &nbsp;&nbsp;&nbsp; ❌ Incorrect: ${wrongCount} &nbsp;&nbsp;&nbsp;
+    🧮 Total: ${result.questions.length}
+  `;
+});
 
-        const optionList = allOptions.map(opt => {
-          const isSelected = opt === userAnswer;
-          const isRight = opt === correctAnswer;
-
-          let bgClass = "bg-white";
-          let icon = "";
-
-          if (isRight) {
-            bgClass = "bg-green-100";
-            icon = `<i class="fa-solid fa-check text-green-600 ms-2"></i>`;
-          }
-
-          if (isSelected && !isRight) {
-            bgClass = "bg-red-100";
-            icon = `<i class="fa-solid fa-xmark text-red-600 ms-2"></i>`;
-          }
-
-          return `<li class="p-2 rounded ${bgClass}">${opt} ${icon}</li>`;
-        }).join("");
-
-        container.innerHTML += `
-          <div class="p-4 bg-gray-50 border rounded-xl shadow-sm">
-            <p class="font-semibold mb-2">Q${index + 1}: ${questionText}</p>
-            <ul class="space-y-2">${optionList}</ul>
-          </div>
-        `;
-      });
-
-      document.getElementById("score-summary").innerHTML = `
-        ✅ Correct: ${correctCount} &nbsp;&nbsp;&nbsp; ❌ Incorrect: ${wrongCount} &nbsp;&nbsp;&nbsp;
-        🧮 Total: ${result.questions.length}
-      `;
-    });
   </script>
 </body>
 </html>
