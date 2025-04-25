@@ -71,7 +71,7 @@
               <i class="fa-solid fa-book text-blue-500"></i> ${result.subject || 'Unknown'}
             </div>
             <span class="badge ${level.color}">
-              <i class="${level.icon} me-1"></i>${level.name}
+              <i class="${level.icon} me-1"></i>${level.name} - ${percent}%
             </span>
           </div>
 
@@ -83,7 +83,7 @@
           <div class="flex flex-col mt-4">
             <p class="text-gray-400 text-sm">Score</p>
             <div class="flex items-end justify-between mt-1">
-              <p class="text-4xl font-extrabold text-blue-600">${percent}%</p>
+              <p class="text-2xl font-extrabold text-blue-600">${percent}%</p>
               <p class="text-gray-500 text-sm">(${score} out of ${total})</p>
             </div>
           </div>
