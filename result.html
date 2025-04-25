@@ -1,21 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Quiz Results</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .neon-border {
+      box-shadow: 0 0 10px #6b21a8, 0 0 20px #9333ea;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-white to-purple-100 min-h-screen flex items-center justify-center p-6 font-sans">
+<body class="min-h-screen flex items-center justify-center p-6 text-white font-[Inter,sans-serif]">
 
-  <div class="w-full max-w-4xl bg-white/90 backdrop-blur-md shadow-2xl rounded-3xl p-8 space-y-8 border border-purple-200">
+  <div class="w-full max-w-5xl glass rounded-3xl p-8 neon-border space-y-8">
     <div class="text-center">
-      <h1 class="text-4xl font-extrabold text-purple-700 tracking-tight">📊 Quiz Results</h1>
-      <p class="text-gray-500 text-sm mt-2">Review your performance across different quizzes</p>
+      <h1 class="text-5xl font-extrabold text-purple-300 tracking-wide drop-shadow-lg">
+        📈 Quiz Performance
+      </h1>
+      <p class="text-gray-300 mt-2 text-sm">Your quiz insights, progress, and victories ✨</p>
     </div>
 
-    <div id="resultsContainer" class="space-y-5">
-      <!-- Dynamic Results will be injected here -->
+    <div id="resultsContainer" class="space-y-6">
+      <!-- Results will be injected here -->
     </div>
   </div>
 
@@ -36,28 +53,35 @@
       results.forEach((result, index) => {
         const card = document.createElement("div");
         card.className = `
-          bg-gradient-to-br from-white to-purple-50 border border-purple-100 
-          rounded-2xl p-5 shadow-md hover:shadow-xl transition-all duration-300 
-          hover:scale-[1.02]`;
+          glass neon-border transition-all duration-300 rounded-2xl p-6 
+          hover:scale-[1.02] hover:shadow-purple-700/30 shadow-lg`;
 
         card.innerHTML = `
-          <div class="flex justify-between items-center">
-            <div>
-              <h2 class="text-2xl font-semibold text-purple-800 flex items-center gap-2">
-                <i class="fas fa-book-open text-purple-500"></i>
-                ${result.subject || 'Unknown Subject'}
+          <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div class="space-y-1">
+              <h2 class="text-2xl font-bold text-purple-200 flex items-center gap-2">
+                <i class="fas fa-book text-purple-400"></i> ${result.subject || 'Unknown Subject'}
               </h2>
-              <p class="text-gray-500 text-sm mt-1">📅 ${result.date || 'Unknown Date'}</p>
+              <p class="text-gray-400 text-sm"><i class="far fa-calendar-alt mr-1"></i> ${result.date || 'Unknown Date'}</p>
             </div>
             <div class="text-right">
-              <div class="text-3xl font-bold text-green-600">${result.score ?? 0}</div>
-              <div class="text-sm text-gray-600">of ${result.total ?? 10}</div>
+              <div class="text-4xl font-extrabold text-green-400">${result.score ?? 0}</div>
+              <div class="text-sm text-gray-300">Out of ${result.total ?? 10}</div>
+              <div class="text-xs mt-1 text-yellow-300 italic">${getRemark(result.score, result.total)}</div>
             </div>
           </div>
         `;
-
         resultsContainer.appendChild(card);
       });
+
+      function getRemark(score, total) {
+        if (!score || !total) return "";
+        const percent = (score / total) * 100;
+        if (percent >= 90) return "Outstanding 💯";
+        if (percent >= 75) return "Great job! 🔥";
+        if (percent >= 50) return "Nice try 👍";
+        return "Keep going! 💪";
+      }
     });
   </script>
 </body>
