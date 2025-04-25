@@ -139,7 +139,7 @@ function showResult() {
   container.innerHTML = `
     <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
     <p class="mt-4 text-lg">Your Score: <strong>${score}</strong> / ${questions.length}</p>
-    <a href="results.html" class="mt-4 inline-block bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">📜 View All Results</a><br>
+    <a href="result.html" class="mt-4 inline-block bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">📜 View All Results</a><br>
     <a href="index.html" class="mt-2 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">🔙 Back to Home</a>
   `;
 
@@ -152,12 +152,14 @@ function saveProgress() {
   let quizData = JSON.parse(localStorage.getItem("quizResults")) || [];
   let savedQuiz = quizData.find(item => item.quizId === quizId);
 
+
   if (savedQuiz) {
     savedQuiz.score = score;
     savedQuiz.currentIndex = currentIndex;
   } else {
     quizData.push({
       quizId: quizId,
+      subject:quizData,
       questions: questions,
       score: score,
       currentIndex: currentIndex,
