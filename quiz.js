@@ -24,7 +24,14 @@ window.addEventListener('load', () => {
   const categoryId = urlParams.get("category");
   const subjectParam = urlParams.get("subject");
 
-  if (subjectParam) subjectName = decodeURIComponent(subjectParam);
+  if (subjectParam) {
+    subjectName = decodeURIComponent(subjectParam);
+  } else if (categoryId) {
+    const categories = JSON.parse(localStorage.getItem("apiCategories")) || [];
+    const matchedCategory = categories.find(c => c.id == categoryId);
+    if (matchedCategory) subjectName = matchedCategory.name;
+  }
+  
 
   if (quizId) {
     loadQuestionsFromLocalQuizzes(quizId);

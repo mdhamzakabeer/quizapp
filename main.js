@@ -130,7 +130,8 @@ async function dropdownData() {
     const response = await fetch("https://opentdb.com/api_category.php");
     const data = await response.json();
     console.log(data);
-
+// ✅ Save API categories for later use in quiz.js
+localStorage.setItem("apiCategories", JSON.stringify(data.trivia_categories));
     createCardsByFetchingDataOfApi(data); // render cards for both API + local
 
     const subjectDropdown = document.getElementById("subject");
@@ -174,14 +175,14 @@ if (startBtn) {
       return;
     }
     console.log(typeof selectedValue)
-   if(selectedValue.length<=2){
-    window.location.href=`quiz.html?category=${selectedValue}`;
+    if (selectedValue.length <= 2) {
+      const selectedText = document.getElementById("subject").selectedOptions[0].textContent;
+      const subject = encodeURIComponent(selectedText);
+      window.location.href = `quiz.html?category=${selectedValue}&subject=${subject}`;
+    } else {
+      window.location.href = `quiz.html?id=${selectedValue}`;
+    }
     
-   }else{
-    window.location.href=`quiz.html?id=${selectedValue}`;
-    
-   }
-  
 
   });
 }
