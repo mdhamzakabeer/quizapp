@@ -124,31 +124,44 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 // Fetch dropdown quiz categories
 
+let data=null;
+async function dropdownData() {
+  try {
+    const response = await fetch("https://opentdb.com/api_category.php");
+    const data = await response.json();
+    console.log(data);
 
-// Fetch categories and populate dropdown
+    createCardsByFetchingDataOfApi(data); // render cards for both API + local
 
-fetch("https://opentdb.com/api_category.php")
-  .then(res => res.json())
-  .then(data => {
-    const select = document.getElementById("quiz-category");
-    data.trivia_categories.forEach(category => {
-      const option = document.createElement("option");
-      option.value = category.id;
-      option.textContent = category.name;
-      select.appendChild(option);
-    });
-  });
+    const subjectDropdown = document.getElementById("subject");
 
-// When user clicks "Get Quiz"
-document.getElementById("start-quiz").addEventListener("click", () => {
-  const selectedCategory = document.getElementById("quiz-category").value;
-  if (!selectedCategory) {
-    alert("Please select a category.");
-    return;
+    if (subjectDropdown) {
+      subjectDropdown.innerHTML = "";
+
+      // 👉 API categories
+      data.trivia_categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.id; // value for API quiz
+        option.textContent = category.name;
+        subjectDropdown.appendChild(option);
+      });
+
+      // 👉 Local quizzes
+      const dataFromLocal = JSON.parse(localStorage.getItem("quizzes")) || [];
+      dataFromLocal.forEach((quiz) => {
+        const option = document.createElement("option");
+        option.value = quiz.id; // value is the local quiz id
+        option.textContent = `${quiz.subject} (Local)`; // label it nicely
+        subjectDropdown.appendChild(option);
+      });
+    }
+  } catch (err) {
+    console.error("Failed to load categories:", err);
   }
-  // Redirect to quiz.html with selected category in query string
-  window.location.href = `quiz.html?category=${selectedCategory}`;
-});
+}
+
+
+dropdownData();
 
 // Start Quiz button
 const startBtn = document.getElementById("start-btn");
