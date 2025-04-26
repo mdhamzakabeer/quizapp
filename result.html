@@ -40,18 +40,19 @@
     }
   </style>
 </head>
+<body class="w-full px-4 sm:px-8 flex flex-col items-center text-center md:text-left gap-4 mb-8 mt-6">
 
-
-  <body class="w-full px-4 sm:px-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-4 mb-8 mt-6">
+  <!-- Top Bar (Icon + Title + Buttons) -->
+  <div class="w-full flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
 
     <!-- Left Section: Icon + Title -->
     <div class="flex flex-col md:flex-row items-center gap-3">
       <i class="fa-solid fa-chart-column text-indigo-600 text-3xl"></i>
       <h1 class="text-2xl md:text-3xl font-extrabold text-gray-800 tracking-wide">GrowQuiz Dashboard</h1>
     </div>
-  
+
     <!-- Right Section: Buttons -->
-    <div class="flex flex-col md:flex-row gap-3 items-center">
+    <div class="flex flex-col md:flex-row gap-3 items-center md:items-end">
       <a href="index.html" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm flex items-center gap-2">
         <i class="fa-solid fa-house"></i> Home
       </a>
@@ -59,6 +60,19 @@
         <i class="fa-solid fa-trash-can"></i> Clear All Results
       </button>
     </div>
+
+  </div>
+
+  <!-- Quiz Result Not Found (Centered) -->
+  <div id="noResultsMessage" class="w-full text-center text-gray-700 font-medium text-xl">
+    <p>No quiz results found</p>
+  </div>
+
+  <!-- Cards -->
+  <div id="resultsContainer" class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 justify-center">
+    <!-- Cards will be injected here -->
+  </div>
+
 </body>
 
 
