@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-
+setTimeout(()=>{
   const isLoggedIn = JSON.parse(localStorage.getItem("isLogin"));
 
   // Redirect if not logged in
@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "login/signUp/quiz-form-login.html";
     return;
   }
+
+},10000)
 
 
   // cards creation
