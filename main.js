@@ -99,7 +99,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   
     cardContainer.appendChild(createCard);
+
+    gsap.from("#card-container div", {
+      opacity: 0,
+      y: 30,
+      scale: 0.8,
+      rotate: 5,
+      duration: 1,
+      stagger: 0.15,
+      ease: "back.out(1.7)"
+    });
+    
   };
+  
   
  // Show/hide nav items
 const loginNav = document.getElementById("login-nav");
