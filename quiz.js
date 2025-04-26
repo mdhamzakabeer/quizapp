@@ -31,7 +31,6 @@ window.addEventListener('load', () => {
     const matchedCategory = categories.find(c => c.id == categoryId);
     if (matchedCategory) subjectName = matchedCategory.name;
   }
-  
 
   if (quizId) {
     loadQuestionsFromLocalQuizzes(quizId);
@@ -139,8 +138,6 @@ document.getElementById('next-btn').addEventListener('click', () => {
   }
 });
 
-
-
 // Back
 document.getElementById('back-btn').addEventListener('click', () => {
   if (currentIndex > 0) {
@@ -153,21 +150,6 @@ document.getElementById('back-btn').addEventListener('click', () => {
 function showResult() {
   const container = document.getElementById('question-container');
   if (quizId) saveProgress();
-
-  const resultObj = {
-    quizId,
-    subject: subjectName,
-    questions,
-    score,
-    currentIndex,
-    total: questions.length,
-    date: new Date().toLocaleString()
-  };
-
-  // Even for API quizzes, save the result
-  let results = JSON.parse(localStorage.getItem("quizResults")) || [];
-  results.push(resultObj);
-  localStorage.setItem("quizResults", JSON.stringify(results));
 
   container.innerHTML = `
     <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
@@ -182,7 +164,7 @@ function showResult() {
 
 // Save local quiz progress
 function saveProgress() {
-  quizId = quizId || Date.now().toString();  // << ADD THIS
+  quizId = quizId || Date.now().toString();  // Ensure quizId exists
   let quizData = JSON.parse(localStorage.getItem("quizResults")) || [];
   let savedQuiz = quizData.find(item => item.quizId === quizId);
 
@@ -190,12 +172,12 @@ function saveProgress() {
     savedQuiz.score = score;
     savedQuiz.currentIndex = currentIndex;
     savedQuiz.date = new Date().toLocaleString();
-    savedQuiz.questions = questions;  // Save the questions with user answers
+    savedQuiz.questions = questions;  // Save updated questions
   } else {
     quizData.push({
       quizId: quizId,
       subject: subjectName,
-      questions: questions,  // Save the questions with user answers
+      questions: questions,
       score: score,
       currentIndex: currentIndex,
       total: questions.length,
