@@ -5,68 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Create Quiz</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://kit.fontawesome.com/a2e0e6ad6e.js" crossorigin="anonymous"></script> <!-- FontAwesome Link -->
 </head>
 <body class="bg-gradient-to-r from-blue-50 via-white to-blue-50 min-h-screen flex flex-col items-center py-10 px-4">
 
-  <div class="max-w-3xl w-full bg-white p-8 rounded-2xl shadow-2xl border border-gray-200">
-    <h2 class="text-3xl font-bold text-blue-700 mb-6 text-center flex items-center justify-center gap-3">
-      <i class="fas fa-pen-alt"></i> Create a New Quiz
-    </h2>
+  <div class="max-w-3xl w-full bg-white p-8 rounded-2xl shadow-2xl">
+    <h2 class="text-3xl font-bold text-blue-700 mb-6 text-center">📝 Create a New Quiz</h2>
 
     <div id="subject-section" class="space-y-4 mb-6">
-      <div class="relative">
-        <i class="fas fa-book absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-        <input id="subject-input" type="text" placeholder="Enter Subject" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
-      </div>
-      <button id="set-subject-btn" class="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition">
-        <i class="fas fa-check-circle"></i> Set Subject
-      </button>
+      <input id="subject-input" type="text" placeholder="Enter Subject" class="w-full p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400"/>
+      <button id="set-subject-btn" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition">✅ Set Subject</button>
     </div>
 
     <form id="quiz-form" class="space-y-4 hidden">
-      <div class="relative">
-        <i class="fas fa-question-circle absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-        <input id="question" type="text" placeholder="Enter Question" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
-      </div>
+      <input id="question" type="text" placeholder="Enter Question" class="w-full p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400"/>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="relative">
-          <i class="fas fa-font absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-          <input id="optionA" type="text" placeholder="Option A" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
-        </div>
-        <div class="relative">
-          <i class="fas fa-font absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-          <input id="optionB" type="text" placeholder="Option B" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
-        </div>
-        <div class="relative">
-          <i class="fas fa-font absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-          <input id="optionC" type="text" placeholder="Option C" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
-        </div>
-        <div class="relative">
-          <i class="fas fa-font absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-          <input id="optionD" type="text" placeholder="Option D" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
-        </div>
+        <input id="optionA" type="text" placeholder="Option A" class="p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400"/>
+        <input id="optionB" type="text" placeholder="Option B" class="p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400"/>
+        <input id="optionC" type="text" placeholder="Option C" class="p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400"/>
+        <input id="optionD" type="text" placeholder="Option D" class="p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400"/>
       </div>
 
-      <div class="relative">
-        <i class="fas fa-check absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400"></i>
-        <input id="correct" type="text" placeholder="Correct Answer (A, B, C, or D)" class="w-full pl-10 p-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"/>
-      </div>
+      <input id="correct" type="text" placeholder="Correct Answer (A, B, C, or D)" class="w-full p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-green-400"/>
 
-      <button type="submit" class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition">
-        <i class="fas fa-plus"></i> Add Question
-      </button>
-      <button id="change-subject-btn" type="button" class="w-full flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-xl font-semibold transition mt-4">
-        <i class="fas fa-sync-alt"></i> Change Subject
-      </button>
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition">➕ Add Question</button>
+      <button id="change-subject-btn" type="button" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg font-semibold transition mt-4">🔄 Change Subject</button>
     </form>
   </div>
 
   <div class="max-w-3xl w-full mt-10">
-    <h3 class="text-2xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
-      <i class="fas fa-list-ul text-blue-600"></i> Questions List
-    </h3>
+    <h3 class="text-2xl font-semibold text-gray-700 mb-4">📋 Questions List</h3>
     <ul id="question-list" class="space-y-4"></ul>
   </div>
 
