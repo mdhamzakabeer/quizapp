@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Create Quiz</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://kit.fontawesome.com/a2e0e6ad6e.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6ad6e.js" crossorigin="anonymous"></script> <!-- FontAwesome Link -->
 </head>
 <body class="bg-gradient-to-r from-blue-50 via-white to-blue-50 min-h-screen flex flex-col items-center py-10 px-4">
 
@@ -19,7 +17,7 @@
     <div id="subject-section" class="space-y-4 mb-6">
       <div class="relative">
         <i class="fas fa-book absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-        <input id="subject-input" type="text" placeholder="Enter Subject" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 transition"/>
+        <input id="subject-input" type="text" placeholder="Enter Subject" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
       </div>
       <button id="set-subject-btn" class="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition">
         <i class="fas fa-check-circle"></i> Set Subject
@@ -29,25 +27,25 @@
     <form id="quiz-form" class="space-y-4 hidden">
       <div class="relative">
         <i class="fas fa-question-circle absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-        <input id="question" type="text" placeholder="Enter Question" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 transition"/>
+        <input id="question" type="text" placeholder="Enter Question" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="relative">
           <i class="fas fa-font absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-          <input id="optionA" type="text" placeholder="Option A" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 transition"/>
+          <input id="optionA" type="text" placeholder="Option A" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
         </div>
         <div class="relative">
           <i class="fas fa-font absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-          <input id="optionB" type="text" placeholder="Option B" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 transition"/>
+          <input id="optionB" type="text" placeholder="Option B" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
         </div>
         <div class="relative">
           <i class="fas fa-font absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-          <input id="optionC" type="text" placeholder="Option C" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 transition"/>
+          <input id="optionC" type="text" placeholder="Option C" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
         </div>
         <div class="relative">
           <i class="fas fa-font absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400"></i>
-          <input id="optionD" type="text" placeholder="Option D" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 transition"/>
+          <input id="optionD" type="text" placeholder="Option D" class="w-full pl-10 p-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
         </div>
       </div>
 
@@ -72,125 +70,7 @@
     <ul id="question-list" class="space-y-4"></ul>
   </div>
 
-  <script>
-    let currentSubject = '';
-    let questions = [];
+  <script src="create-quiz.js"></script>
 
-    const subjectInput = document.getElementById('subject-input');
-    const setSubjectBtn = document.getElementById('set-subject-btn');
-    const quizForm = document.getElementById('quiz-form');
-    const questionList = document.getElementById('question-list');
-    const questionInput = document.getElementById('question');
-    const optionA = document.getElementById('optionA');
-    const optionB = document.getElementById('optionB');
-    const optionC = document.getElementById('optionC');
-    const optionD = document.getElementById('optionD');
-    const correct = document.getElementById('correct');
-    const changeSubjectBtn = document.getElementById('change-subject-btn');
-
-    setSubjectBtn.addEventListener('click', () => {
-      const subject = subjectInput.value.trim();
-      if (subject) {
-        currentSubject = subject;
-        questions = []; // New subject, empty questions
-        quizForm.classList.remove('hidden');
-        Toastify({
-          text: "Subject Added Successfully!",
-          duration: 3000,
-          gravity: "top",
-          position: "right",
-          backgroundColor: "#28a745",
-        }).showToast();
-      }
-    });
-
-    quizForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const question = questionInput.value.trim();
-      const isDuplicate = questions.some(q => q.question.toLowerCase() === question.toLowerCase());
-
-      if (isDuplicate) {
-        Toastify({
-          text: "Question already exists!",
-          duration: 3000,
-          gravity: "top",
-          position: "right",
-          backgroundColor: "#dc3545",
-        }).showToast();
-        return;
-      }
-
-      const newQuestion = {
-        question: question,
-        options: {
-          A: optionA.value.trim(),
-          B: optionB.value.trim(),
-          C: optionC.value.trim(),
-          D: optionD.value.trim(),
-        },
-        correct: correct.value.trim().toUpperCase(),
-      };
-
-      questions.push(newQuestion);
-      displayQuestions();
-
-      Toastify({
-        text: "Question Added Successfully!",
-        duration: 3000,
-        gravity: "top",
-        position: "right",
-        backgroundColor: "#007bff",
-      }).showToast();
-
-      // Reset inputs
-      questionInput.value = '';
-      optionA.value = '';
-      optionB.value = '';
-      optionC.value = '';
-      optionD.value = '';
-      correct.value = '';
-    });
-
-    changeSubjectBtn.addEventListener('click', () => {
-      quizForm.classList.add('hidden');
-      subjectInput.value = '';
-      questionList.innerHTML = '';
-      Toastify({
-        text: "You can change the subject now!",
-        duration: 3000,
-        gravity: "top",
-        position: "right",
-        backgroundColor: "#ffc107",
-      }).showToast();
-    });
-
-    function displayQuestions() {
-  questionList.innerHTML = '';
-  questions.forEach((q, index) => {
-    const li = document.createElement('li');
-    li.className = 'p-4 bg-white rounded-xl shadow flex flex-col border border-gray-200';
-
-    // Correct answer ke text fetch karo
-    let correctText = q.options[q.correct];
-
-    li.innerHTML = `
-      <h4 class="font-semibold text-blue-700">${currentSubject}</h4>
-      <p class="text-gray-700 mt-2">${index + 1}. ${q.question}</p>
-      <ul class="list-disc pl-5 text-gray-600 mt-2 space-y-1">
-        <li>A: ${q.options.A}</li>
-        <li>B: ${q.options.B}</li>
-        <li>C: ${q.options.C}</li>
-        <li>D: ${q.options.D}</li>
-      </ul>
-      <p class="text-green-600 font-semibold mt-2">Correct Answer: ${q.correct} (${correctText})</p>
-    `;
-
-    questionList.appendChild(li);
-  });
-}
-
-  </script>
-<script src="create-quiz.js"></script>
 </body>
 </html>
