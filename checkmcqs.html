@@ -22,46 +22,40 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const quizId = urlParams.get("id");
+   questions.forEach((question, index) => {
+  const userAnswer = question.userSelected;
+  const correctAnswer = question.correct_answer || question.correct;
+  const allAnswers = [...question.incorrect_answers, correctAnswer];
 
-      if (!quizId) {
-        alert("Quiz ID is missing in URL.");
-        return;
-      }
+  const questionElement = document.createElement('div');
+  questionElement.className = 'mb-6 border-b pb-4';
 
-      // Get stored results
-      const storedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
-      const quizResult = storedResults.find(result => result.quizId === quizId);
+  questionElement.innerHTML = `
+    <h2 class="text-xl font-semibold mb-2">Q${index + 1}: ${question.question}</h2>
+    <div class="space-y-2">
+      ${allAnswers.map(ans => {
+        const isUserSelected = ans === userAnswer;
+        const isCorrect = ans === correctAnswer;
 
-      if (!quizResult) {
-        alert("Quiz result not found.");
-        return;
-      }
+        let classes = 'px-4 py-2 rounded border';
+        if (isCorrect && isUserSelected) {
+          classes += ' bg-green-100 border-green-500 text-green-700'; // correct and selected ✅
+        } else if (isCorrect) {
+          classes += ' bg-green-50 border-green-400 text-green-600'; // correct but not selected 🟢
+        } else if (isUserSelected) {
+          classes += ' bg-red-100 border-red-400 text-red-700'; // wrong answer selected ❌
+        } else {
+          classes += ' bg-gray-100 border-gray-300 text-gray-700'; // unselected option
+        }
 
-      const questions = quizResult.questions;
-      const questionsContainer = document.getElementById("questions-container");
+        return `<div class="${classes}">${ans}</div>`;
+      }).join('')}
+    </div>
+  `;
 
-      questions.forEach((question, index) => {
-        const isCorrect = question.userSelected && question.userSelected.toLowerCase() === (question.correct_answer || question.correct).toLowerCase();
-        const answerClass = isCorrect ? 'text-green-500' : 'text-red-500';
+  questionsContainer.appendChild(questionElement);
+});
 
-        const questionElement = document.createElement('div');
-        questionElement.className = 'mb-6';
-
-        questionElement.innerHTML = `
-          <h2 class="text-xl font-semibold mb-2">Q${index + 1}: ${question.question}</h2>
-          <div class="space-y-2">
-            ${question.incorrect_answers.concat(question.correct_answer).map(ans => `
-              <div class="${answerClass}">${ans}</div>
-            `).join('')}
-          </div>
-        `;
-
-        questionsContainer.appendChild(questionElement);
-      });
-    });
   </script>
 
 </body>
