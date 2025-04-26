@@ -52,124 +52,108 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
   const resultsContainer = document.getElementById("resultsContainer");
-  resultsContainer.innerHTML = ""; // 🧹 Saaf karo purane results ko
-  const storedResults = localStorage.getItem("quizResults");
-  const results = storedResults ? JSON.parse(storedResults) : [];
+  
+  function loadResults() {
+    resultsContainer.innerHTML = ""; // Sab cards hata do
+    const storedResults = localStorage.getItem("quizResults");
+    const results = storedResults ? JSON.parse(storedResults) : [];
 
+    if (results.length === 0) {
+      resultsContainer.innerHTML = `
+        <div class="col-span-full text-center text-gray-400 text-lg italic">
+          No quiz results found.
+        </div>`;
+      return;
+    }
 
-      if (results.length === 0) {
-        resultsContainer.innerHTML = `
-          <div class="col-span-full text-center text-gray-400 text-lg italic">
-            No quiz results found.
-          </div>`;
-        return;
-      }
+    results.forEach((result, index) => {
+      const score = result.score ?? 0;
+      const total = result.total ?? 10;
+      const percent = Math.round((score / total) * 100);
+      const level = getLevel(percent);
 
-      results.forEach((result, index) => {
-        const score = result.score ?? 0;
-        const total = result.total ?? 10;
-        const percent = Math.round((score / total) * 100);
-        const level = getLevel(percent);
-
-        const card = document.createElement("div");
-        card.className = "card rounded-2xl p-6 shadow-lg flex flex-col gap-4 hover:shadow-2xl";
-
-        card.innerHTML = `
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2 text-lg font-semibold text-gray-700 truncate">
-              <i class="fa-solid fa-book text-blue-500"></i> ${result.subject || 'Unknown'}
-            </div>
-            <span class="badge ${level.color}">
-              <i class="${level.icon} me-1"></i>${level.name} - ${percent}%
-            </span>
+      const card = document.createElement("div");
+      card.className = "card rounded-2xl p-6 shadow-lg flex flex-col gap-4 hover:shadow-2xl";
+      card.innerHTML = `
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2 text-lg font-semibold text-gray-700 truncate">
+            <i class="fa-solid fa-book text-blue-500"></i> ${result.subject || 'Unknown'}
           </div>
+          <span class="badge ${level.color}">
+            <i class="${level.icon} me-1"></i>${level.name} - ${percent}%
+          </span>
+        </div>
 
-          <div class="flex items-center gap-2 text-sm text-gray-400">
-            <i class="fa-regular fa-calendar-days"></i>
-            <span>${result.date || new Date().toLocaleString()}</span>
+        <div class="flex items-center gap-2 text-sm text-gray-400">
+          <i class="fa-regular fa-calendar-days"></i>
+          <span>${result.date || new Date().toLocaleString()}</span>
+        </div>
+
+        <div class="mt-2">
+          <p class="text-gray-600 font-semibold text-sm mb-1">Health Level</p>
+          <div class="relative h-4 rounded-full"
+            style="background: linear-gradient(to right, #38BDF8, #A78BFA, #F472B6);">
+            <div class="absolute top-[-6px] w-1 h-6 bg-blue-900 rounded"
+              style="left: ${percent}%; transform: translateX(-50%);"></div>
           </div>
-
-          <div class="mt-2">
-            <p class="text-gray-600 font-semibold text-sm mb-1">Health Level</p>
-            <div class="relative h-4 rounded-full"
-              style="background: linear-gradient(to right, #38BDF8, #A78BFA, #F472B6);">
-              <div class="absolute top-[-6px] w-1 h-6 bg-blue-900 rounded"
-                style="left: ${percent}%; transform: translateX(-50%);"></div>
-            </div>
-            <div class="flex justify-between text-xs text-gray-700 font-semibold mt-1">
-              <span>LOW</span><span>MEDIUM</span><span>HIGH</span>
-            </div>
+          <div class="flex justify-between text-xs text-gray-700 font-semibold mt-1">
+            <span>LOW</span><span>MEDIUM</span><span>HIGH</span>
           </div>
+        </div>
 
-    <!-- Add this inside the card innerHTML -->
-<div class="flex flex-col mt-4">
-  <p class="text-gray-400 text-sm">Score</p>
-  <div class="flex items-end justify-between mt-1">
-    <p class="text-2xl font-extrabold text-blue-600">${percent}%</p>
-    <p class="text-gray-500 text-sm">(${score} out of ${total})</p>
-  </div>
-</div>
+        <div class="flex flex-col mt-4">
+          <p class="text-gray-400 text-sm">Score</p>
+          <div class="flex items-end justify-between mt-1">
+            <p class="text-2xl font-extrabold text-blue-600">${percent}%</p>
+            <p class="text-gray-500 text-sm">(${score} out of ${total})</p>
+          </div>
+        </div>
 
-<!-- New Button for Checking MCQs -->
-<a href="checkmcqs.html?id=${result.quizId}" class="text-sm text-blue-600 underline mt-3 self-end">
-  <i class="fa-solid fa-check-circle"></i> Check MCQs
-</a>
+        <a href="checkmcqs.html?id=${result.quizId}" class="text-sm text-blue-600 underline mt-3 self-end">
+          <i class="fa-solid fa-check-circle"></i> Check MCQs
+        </a>
 
-<!-- 🔥 Individual Delete Button -->
-<button class="text-sm text-red-600 underline mt-3 self-end delete-btn">
-  <i class="fa-solid fa-trash"></i> Delete
-</button>
+        <button class="text-sm text-red-600 underline mt-3 self-end delete-btn" data-index="${index}">
+          <i class="fa-solid fa-trash"></i> Delete
+        </button>
+      `;
 
-
-        `;
-
-        resultsContainer.appendChild(card);
-      });
-
-      function getLevel(percent) {
-        if (percent >= 90) return {
-          name: "Pro",
-          color: "bg-green-100 text-green-700",
-          icon: "fa-solid fa-medal"
-        };
-        if (percent >= 75) return {
-          name: "Advanced",
-          color: "bg-blue-100 text-blue-700",
-          icon: "fa-solid fa-rocket"
-        };
-        if (percent >= 50) return {
-          name: "Intermediate",
-          color: "bg-yellow-100 text-yellow-700",
-          icon: "fa-solid fa-lightbulb"
-        };
-        return {
-          name: "Beginner",
-          color: "bg-red-100 text-red-600",
-          icon: "fa-solid fa-seedling"
-        };
-      }
-
-      // 🔥 Handle Individual Delete
-      document.addEventListener('click', (e) => {
-        if (e.target.closest('.delete-btn')) {
-          const index = [...document.querySelectorAll('.delete-btn')].indexOf(e.target.closest('.delete-btn'));
-          let updatedResults = [...results];
-          updatedResults.splice(index, 1);
-          localStorage.setItem("quizResults", JSON.stringify(updatedResults));
-          location.reload();
-        }
-      });
-
-      // 🔴 Clear All Results Button
-      document.getElementById("clearAllResults")?.addEventListener("click", () => {
-        if (confirm("Are you sure you want to delete all results?")) {
-          localStorage.removeItem("quizResults");
-          location.reload();
-        }
-      });
+      resultsContainer.appendChild(card);
     });
+  }
+
+  loadResults(); // Pehli baar load hote hi
+
+  // Delete ka listener
+  document.addEventListener('click', (e) => {
+    const deleteBtn = e.target.closest('.delete-btn');
+    if (deleteBtn) {
+      const index = parseInt(deleteBtn.dataset.index);
+      const storedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
+      storedResults.splice(index, 1);
+      localStorage.setItem("quizResults", JSON.stringify(storedResults));
+      loadResults(); // FIR SE FRESH LOAD karo bina reload() ke
+    }
+  });
+
+  // Clear all
+  document.getElementById("clearAllResults")?.addEventListener("click", () => {
+    if (confirm("Are you sure you want to delete all results?")) {
+      localStorage.removeItem("quizResults");
+      loadResults(); // FIR SE FRESH LOAD karo
+    }
+  });
+
+  function getLevel(percent) {
+    if (percent >= 90) return { name: "Pro", color: "bg-green-100 text-green-700", icon: "fa-solid fa-medal" };
+    if (percent >= 75) return { name: "Advanced", color: "bg-blue-100 text-blue-700", icon: "fa-solid fa-rocket" };
+    if (percent >= 50) return { name: "Intermediate", color: "bg-yellow-100 text-yellow-700", icon: "fa-solid fa-lightbulb" };
+    return { name: "Beginner", color: "bg-red-100 text-red-600", icon: "fa-solid fa-seedling" };
+  }
+});
+
   </script>
 </body>
 </html>
