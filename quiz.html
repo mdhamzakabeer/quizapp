@@ -75,14 +75,22 @@
   </main>
 
   <script>
-    // JavaScript to handle selection effect
-    const options = document.querySelectorAll('label');
-    options.forEach(option => {
-      option.addEventListener('click', () => {
-        options.forEach(opt => opt.classList.remove('border-blue-500', 'bg-blue-50'));
-        option.classList.add('border-blue-500', 'bg-blue-50');
-      });
+    const options = document.querySelectorAll('#options-form label');
+const nextBtn = document.getElementById('next-btn');
+
+options.forEach(option => {
+  option.addEventListener('click', () => {
+    options.forEach(opt => {
+      opt.classList.remove('border-blue-500', 'bg-blue-50');
+      opt.querySelector('input').checked = false; // important
     });
+    const input = option.querySelector('input');
+    input.checked = true; // ✅ radio ko check karo
+    option.classList.add('border-blue-500', 'bg-blue-50');
+    nextBtn.disabled = false; // ✅ next button enable karo
+  });
+});
+
   </script>
 
 </body>
