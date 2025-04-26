@@ -1,8 +1,31 @@
+const subjectInput = document.getElementById('subject-input');
+const setSubjectBtn = document.getElementById('set-subject-btn');
 const quizForm = document.getElementById('quiz-form');
 const questionList = document.getElementById('question-list');
+const changeSubjectBtn = document.getElementById('change-subject-btn');
+
+let currentSubject = null;
 let editingQuestionId = null;
 
 window.addEventListener('DOMContentLoaded', loadSavedQuizzes);
+
+setSubjectBtn.addEventListener('click', () => {
+  const subject = subjectInput.value.trim();
+  if (!subject) {
+    alert("Please enter a subject.");
+    return;
+  }
+  currentSubject = subject;
+  document.getElementById('subject-section').classList.add('hidden');
+  quizForm.classList.remove('hidden');
+});
+
+changeSubjectBtn.addEventListener('click', () => {
+  currentSubject = null;
+  subjectInput.value = '';
+  quizForm.classList.add('hidden');
+  document.getElementById('subject-section').classList.remove('hidden');
+});
 
 function generateId() {
   return 'q_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
@@ -11,7 +34,6 @@ function generateId() {
 quizForm.addEventListener('submit', function(e) {
   e.preventDefault();
 
-  const subject = document.getElementById('subject-input').value.trim();
   const question = document.getElementById('question').value.trim();
   const optionA = document.getElementById('optionA').value.trim();
   const optionB = document.getElementById('optionB').value.trim();
@@ -19,7 +41,7 @@ quizForm.addEventListener('submit', function(e) {
   const optionD = document.getElementById('optionD').value.trim();
   const correct = document.getElementById('correct').value.trim().toUpperCase();
 
-  if (!subject || !question || !optionA || !optionB || !optionC || !optionD || !correct) {
+  if (!currentSubject || !question || !optionA || !optionB || !optionC || !optionD || !correct) {
     alert("Please fill in all fields.");
     return;
   }
@@ -43,20 +65,18 @@ quizForm.addEventListener('submit', function(e) {
   };
 
   const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
-  let subjectQuiz = stored.find(q => q.subject.toLowerCase() === subject.toLowerCase());
+  let subjectQuiz = stored.find(q => q.subject.toLowerCase() === currentSubject.toLowerCase());
 
   if (subjectQuiz) {
     if (editingQuestionId) {
-      subjectQuiz.questions = subjectQuiz.questions.map(q => 
-        q.id === editingQuestionId ? newQuestion : q
-      );
+      subjectQuiz.questions = subjectQuiz.questions.map(q => q.id === editingQuestionId ? newQuestion : q);
     } else {
       subjectQuiz.questions.push(newQuestion);
     }
   } else {
     stored.push({
       id: generateId(),
-      subject,
+      subject: currentSubject,
       questions: [newQuestion]
     });
   }
@@ -64,9 +84,9 @@ quizForm.addEventListener('submit', function(e) {
   localStorage.setItem("quizzes", JSON.stringify(stored));
 
   if (editingQuestionId) {
-    updateQuestionInUI(subject, newQuestion);
+    updateQuestionInUI(currentSubject, newQuestion);
   } else {
-    addQuestionToUI(subject, newQuestion);
+    addQuestionToUI(currentSubject, newQuestion);
   }
 
   quizForm.reset();
@@ -147,7 +167,10 @@ questionList.addEventListener('click', function(e) {
     const questionToEdit = subjectQuiz?.questions.find(q => q.id === questionId);
 
     if (questionToEdit) {
-      document.getElementById('subject-input').value = subject;
+      currentSubject = subject;
+      document.getElementById('subject-section').classList.add('hidden');
+      quizForm.classList.remove('hidden');
+      
       document.getElementById('question').value = questionToEdit.question;
       const allOptions = [...questionToEdit.incorrect_answers, questionToEdit.correct_answer];
       document.getElementById('optionA').value = allOptions[0] || '';

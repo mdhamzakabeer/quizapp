@@ -11,9 +11,12 @@
   <div class="max-w-3xl w-full bg-white p-8 rounded-2xl shadow-2xl">
     <h2 class="text-3xl font-bold text-blue-700 mb-6 text-center">📝 Create a New Quiz</h2>
 
-    <form id="quiz-form" class="space-y-4">
+    <div id="subject-section" class="space-y-4 mb-6">
       <input id="subject-input" type="text" placeholder="Enter Subject" class="w-full p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400"/>
+      <button id="set-subject-btn" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition">✅ Set Subject</button>
+    </div>
 
+    <form id="quiz-form" class="space-y-4 hidden">
       <input id="question" type="text" placeholder="Enter Question" class="w-full p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-400"/>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -26,6 +29,7 @@
       <input id="correct" type="text" placeholder="Correct Answer (A, B, C, or D)" class="w-full p-3 border border-blue-300 rounded-lg focus:ring-2 focus:ring-green-400"/>
 
       <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition">➕ Add Question</button>
+      <button id="change-subject-btn" type="button" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg font-semibold transition mt-4">🔄 Change Subject</button>
     </form>
   </div>
 
