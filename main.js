@@ -264,7 +264,9 @@ gsap.to("#headline", {
     gsap.from("header", {
       y: -100,
       opacity: 0,
-      duration: 1,
+    
+      duration: 1.5,
+      delay:4.7,
       ease: "bounce.out"
     });
     
