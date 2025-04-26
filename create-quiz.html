@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Create a New Quiz</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://kit.fontawesome.com/a2e0e6ad6e.js" crossorigin="anonymous"></script> <!-- FontAwesome -->
+  <script src="https://kit.fontawesome.com/a2e0e6ad6e.js" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center py-10 px-4">
 
@@ -25,19 +25,19 @@
     <form id="quiz-form" class="space-y-6">
       <div class="space-y-2">
         <label for="subject-input" class="block text-base font-medium text-gray-700">Subject</label>
-        <input id="subject-input" type="text" placeholder="Enter Subject Name" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400"/>
+        <input id="subject-input" type="text" placeholder="Enter Subject Name" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400"/>
       </div>
 
       <div class="space-y-2">
         <label for="question" class="block text-base font-medium text-gray-700">Question</label>
-        <input id="question" type="text" placeholder="Enter Question" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400"/>
+        <input id="question" type="text" placeholder="Enter Question" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400"/>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input id="optionA" type="text" placeholder="Option A" class="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400"/>
-        <input id="optionB" type="text" placeholder="Option B" class="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400"/>
-        <input id="optionC" type="text" placeholder="Option C" class="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400"/>
-        <input id="optionD" type="text" placeholder="Option D" class="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400"/>
+        <input id="optionA" type="text" placeholder="Option A" class="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400"/>
+        <input id="optionB" type="text" placeholder="Option B" class="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400"/>
+        <input id="optionC" type="text" placeholder="Option C" class="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400"/>
+        <input id="optionD" type="text" placeholder="Option D" class="p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400"/>
       </div>
 
       <div class="space-y-2">
@@ -46,7 +46,7 @@
       </div>
 
       <!-- Add Question Button -->
-      <button type="submit" class="w-full bg-yellow-400 text-gray-800 border border-yellow-400 py-3 rounded-full font-semibold hover:bg-yellow-300 transition flex items-center justify-center gap-2">
+      <button type="submit" class="w-full bg-blue-500 text-white py-3 rounded-full font-semibold hover:bg-blue-400 transition flex items-center justify-center gap-2">
         <i class="fas fa-plus"></i> Add Question
       </button>
     </form>
@@ -70,21 +70,34 @@
     const list = document.getElementById('question-list');
     const toast = document.getElementById('toast');
 
+    let currentSubject = "";
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      const subject = document.getElementById('subject-input').value;
-      const question = document.getElementById('question').value;
-      const optionA = document.getElementById('optionA').value;
-      const optionB = document.getElementById('optionB').value;
-      const optionC = document.getElementById('optionC').value;
-      const optionD = document.getElementById('optionD').value;
-      const correct = document.getElementById('correct').value.toUpperCase();
+
+      let subjectInput = document.getElementById('subject-input');
+      const subject = subjectInput.value.trim();
+      const question = document.getElementById('question').value.trim();
+      const optionA = document.getElementById('optionA').value.trim();
+      const optionB = document.getElementById('optionB').value.trim();
+      const optionC = document.getElementById('optionC').value.trim();
+      const optionD = document.getElementById('optionD').value.trim();
+      const correct = document.getElementById('correct').value.trim().toUpperCase();
+
+      if (subject !== "") {
+        currentSubject = subject; // New Subject Save
+      }
+
+      if (currentSubject === "") {
+        alert("Please enter a subject first!");
+        return;
+      }
 
       const item = document.createElement('li');
       item.className = "bg-white border border-gray-300 p-6 rounded-xl shadow-md";
       item.innerHTML = `
         <div class="space-y-2">
-          <p class="text-sm text-blue-600 font-semibold">${subject}</p>
+          <p class="text-sm text-blue-600 font-semibold">${currentSubject}</p>
           <p class="text-gray-800 font-medium">${question}</p>
           <p class="text-gray-600">A: ${optionA}</p>
           <p class="text-gray-600">B: ${optionB}</p>
@@ -92,10 +105,10 @@
           <p class="text-gray-600">D: ${optionD}</p>
           <p class="text-green-500 font-semibold">Correct Answer: ${correct}</p>
           <div class="flex gap-3 mt-4">
-            <button class="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-gray-800 rounded-full text-sm hover:bg-yellow-300 transition">
+            <button class="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-blue-400 transition">
               <i class="fas fa-pen"></i> Edit
             </button>
-            <button class="flex items-center gap-2 px-4 py-2 bg-red-400 text-white rounded-full text-sm hover:bg-red-300 transition">
+            <button class="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-full text-sm hover:bg-red-400 transition">
               <i class="fas fa-trash"></i> Delete
             </button>
           </div>
@@ -103,7 +116,14 @@
       `;
       list.appendChild(item);
 
-      form.reset();
+      // Clear Only Question Fields, Subject Nahi Clear
+      document.getElementById('question').value = "";
+      document.getElementById('optionA').value = "";
+      document.getElementById('optionB').value = "";
+      document.getElementById('optionC').value = "";
+      document.getElementById('optionD').value = "";
+      document.getElementById('correct').value = "";
+
       toast.classList.remove('hidden');
       setTimeout(() => {
         toast.classList.add('hidden');
