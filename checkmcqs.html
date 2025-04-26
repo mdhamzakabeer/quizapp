@@ -25,64 +25,44 @@
     document.addEventListener("DOMContentLoaded", () => {
       const urlParams = new URLSearchParams(window.location.search);
       const quizId = urlParams.get("id");
-  
+
       if (!quizId) {
         alert("Quiz ID is missing in URL.");
         return;
       }
-  
-      // Get stored results from localStorage
+
+      // Get stored results
       const storedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
       const quizResult = storedResults.find(result => result.quizId === quizId);
-  
+
       if (!quizResult) {
         alert("Quiz result not found.");
         return;
       }
-  
+
       const questions = quizResult.questions;
       const questionsContainer = document.getElementById("questions-container");
-  
-      // Loop through each question and display it
-      quizResult.questions.forEach((question, index) => {
-        // ✅ Console debugging
-        console.log("Question:", question.question);
-        console.log("User Answer:", question.userAnswer);
-        console.log("Correct Answer:", question.correctAnswer);
-  
-        const questionElement = document.createElement("div");
-        questionElement.classList.add("mb-4", "p-4", "border", "rounded");
-  
-        const questionText = document.createElement("p");
-        questionText.textContent = `${index + 1}. ${question.question}`;
-        questionText.classList.add("font-semibold", "mb-2");
-        questionElement.appendChild(questionText);
-  
-        const optionsList = document.createElement("ul");
-        optionsList.classList.add("list-disc", "pl-6");
-  
-        const userSelectedOption = question.userAnswer;
-        const isCorrect = userSelectedOption === question.correctAnswer;
-  
-        question.options.forEach((option) => {
-          const optionItem = document.createElement("li");
-          optionItem.textContent = option;
-  
-          if (option === userSelectedOption) {
-            optionItem.classList.add(isCorrect ? "text-green-500" : "text-red-500");
-          } else if (option === question.correctAnswer) {
-            optionItem.classList.add("text-green-500");
-          }
-  
-          optionsList.appendChild(optionItem);
-        });
-  
-        questionElement.appendChild(optionsList);
+
+      questions.forEach((question, index) => {
+        const isCorrect = question.userSelected && question.userSelected.toLowerCase() === (question.correct_answer || question.correct).toLowerCase();
+        const answerClass = isCorrect ? 'text-green-500' : 'text-red-500';
+
+        const questionElement = document.createElement('div');
+        questionElement.className = 'mb-6';
+
+        questionElement.innerHTML = `
+          <h2 class="text-xl font-semibold mb-2">Q${index + 1}: ${question.question}</h2>
+          <div class="space-y-2">
+            ${question.incorrect_answers.concat(question.correct_answer).map(ans => `
+              <div class="${answerClass}">${ans}</div>
+            `).join('')}
+          </div>
+        `;
+
         questionsContainer.appendChild(questionElement);
       });
     });
   </script>
-  
 
 </body>
 
