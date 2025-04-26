@@ -74,16 +74,8 @@
     </div>
   </main>
 
-  <script>
-    // JavaScript to handle selection effect
-    const options = document.querySelectorAll('label');
-    options.forEach(option => {
-      option.addEventListener('click', () => {
-        options.forEach(opt => opt.classList.remove('border-blue-500', 'bg-blue-50'));
-        option.classList.add('border-blue-500', 'bg-blue-50');
-      });
-    });
-  </script>
+  <script type="module" src="quiz.js"></script>
+  <script type="module" src="dummy-quiz.js"></script>
 
 </body>
 
