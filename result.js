@@ -1,8 +1,9 @@
-// results.js
 document.addEventListener('DOMContentLoaded', () => {
   const resultsList = document.getElementById('results-list');
   const clearBtn = document.getElementById('clear-results');
   const results = JSON.parse(localStorage.getItem("quizResults")) || [];
+
+  console.log('Stored quiz results:', results);  // Debug log to check stored results
 
   if (results.length === 0) {
     resultsList.innerHTML = `
