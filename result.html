@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Quiz Dashboard</title>
@@ -11,16 +12,19 @@
       font-family: 'Inter', sans-serif;
       background-color: #f8fafc;
     }
+
     .card {
       background: linear-gradient(to top left, #ffffff, #f9fafb);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       overflow: hidden;
       position: relative;
     }
+
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
     }
+
     .badge {
       @apply text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap flex items-center gap-1;
     }
@@ -50,45 +54,46 @@
     </div>
   </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const resultsContainer = document.getElementById("resultsContainer");
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const resultsContainer = document.getElementById("resultsContainer");
 
-  function loadResults() {
-    resultsContainer.innerHTML = "";
-    const storedResults = localStorage.getItem("quizResults");
-    const results = storedResults ? JSON.parse(storedResults) : [];
+      function loadResults() {
+        resultsContainer.innerHTML = "";
+        const storedResults = localStorage.getItem("quizResults");
+        const results = storedResults ? JSON.parse(storedResults) : [];
 
-    if (results.length === 0) {
-      resultsContainer.innerHTML = `
+        if (results.length === 0) {
+          resultsContainer.innerHTML = `
         <div class="col-span-full text-center text-gray-400 text-lg italic">
           No quiz results found.
         </div>`;
-      return;
-    }
+          return;
+        }
 
-    results.forEach((result, index) => {
-      const score = result.score ?? 0;
-      const total = result.total ?? 10;
-      const percent = Math.round((score / total) * 100);
-      const level = getLevel(percent);
+        results.forEach((result, index) => {
+          const score = result.score ?? 0;
+          const total = result.total ?? 10;
+          const percent = Math.round((score / total) * 100);
+          const level = getLevel(percent);
 
-      const card = document.createElement("div");
-      card.className = "card rounded-2xl p-6 shadow-lg flex flex-col gap-5";
+          const card = document.createElement("div");
+          card.className = "card rounded-2xl p-6 shadow-lg flex flex-col gap-5";
 
-      card.innerHTML = `
-        <!-- Badge -->
-        <div class="absolute top-4 right-4">
-          <span class="badge ${level.color}">
-            <i class="${level.icon}"></i> ${level.name} - ${percent}%
-          </span>
-        </div>
+          card.innerHTML = `
+    <!-- Badge -->
+<div class="absolute top-2 right-2">
+  <span class="badge ${level.color} text-[11px] py-0.5 px-2">
+    <i class="${level.icon}"></i> ${level.name} - ${percent}%
+  </span>
+</div>
 
-        <!-- Subject -->
-        <div class="flex items-center gap-2 text-xl font-bold text-gray-800 truncate">
-          <i class="fa-solid fa-book text-blue-500 text-2xl"></i>
-          <span class="truncate">${result.subject || 'Unknown'}</span>
-        </div>
+<!-- Subject -->
+<div class="flex items-center gap-2 text-xl font-bold text-gray-800 truncate mt-6">
+  <i class="fa-solid fa-book text-blue-500 text-2xl"></i>
+  <span class="truncate">${result.subject || 'Unknown'}</span>
+</div>
+
 
         <!-- Date -->
         <div class="flex items-center gap-2 text-sm text-gray-400">
@@ -128,38 +133,39 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      resultsContainer.appendChild(card);
+          resultsContainer.appendChild(card);
+        });
+      }
+
+      loadResults();
+
+      document.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+          const index = parseInt(deleteBtn.dataset.index);
+          const storedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
+          storedResults.splice(index, 1);
+          localStorage.setItem("quizResults", JSON.stringify(storedResults));
+          loadResults();
+        }
+      });
+
+      document.getElementById("clearAllResults")?.addEventListener("click", () => {
+        if (confirm("Are you sure you want to delete all results?")) {
+          localStorage.removeItem("quizResults");
+          loadResults();
+        }
+      });
+
+      function getLevel(percent) {
+        if (percent >= 90) return { name: "Pro", color: "bg-green-100 text-green-700", icon: "fa-solid fa-medal" };
+        if (percent >= 75) return { name: "Advanced", color: "bg-blue-100 text-blue-700", icon: "fa-solid fa-rocket" };
+        if (percent >= 50) return { name: "Intermediate", color: "bg-yellow-100 text-yellow-700", icon: "fa-solid fa-lightbulb" };
+        return { name: "Beginner", color: "bg-red-100 text-red-600", icon: "fa-solid fa-seedling" };
+      }
     });
-  }
-
-  loadResults();
-
-  document.addEventListener('click', (e) => {
-    const deleteBtn = e.target.closest('.delete-btn');
-    if (deleteBtn) {
-      const index = parseInt(deleteBtn.dataset.index);
-      const storedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
-      storedResults.splice(index, 1);
-      localStorage.setItem("quizResults", JSON.stringify(storedResults));
-      loadResults();
-    }
-  });
-
-  document.getElementById("clearAllResults")?.addEventListener("click", () => {
-    if (confirm("Are you sure you want to delete all results?")) {
-      localStorage.removeItem("quizResults");
-      loadResults();
-    }
-  });
-
-  function getLevel(percent) {
-    if (percent >= 90) return { name: "Pro", color: "bg-green-100 text-green-700", icon: "fa-solid fa-medal" };
-    if (percent >= 75) return { name: "Advanced", color: "bg-blue-100 text-blue-700", icon: "fa-solid fa-rocket" };
-    if (percent >= 50) return { name: "Intermediate", color: "bg-yellow-100 text-yellow-700", icon: "fa-solid fa-lightbulb" };
-    return { name: "Beginner", color: "bg-red-100 text-red-600", icon: "fa-solid fa-seedling" };
-  }
-});
-</script>
+  </script>
 
 </body>
+
 </html>
