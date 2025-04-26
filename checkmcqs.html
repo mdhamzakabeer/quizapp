@@ -8,19 +8,15 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    /* Smooth entrance animation */
     .fade-in {
       animation: fadeIn 0.6s ease-in-out;
     }
-
     @keyframes fadeIn {
       0% { opacity: 0; transform: translateY(20px); }
       100% { opacity: 1; transform: translateY(0); }
     }
-
-    /* Hover effect on answers */
     .option:hover {
-      background-color: #f3f4f6; /* light gray hover */
+      background-color: #f3f4f6;
       border-radius: 0.5rem;
       cursor: pointer;
     }
@@ -42,7 +38,8 @@
   </div>
 
   <!-- Main Content -->
-  <div class="w-full max-w-2xl bg-white p-6 sm:p-8 rounded-xl shadow-md fade-in flex flex-col">
+  <div class="w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl bg-white p-6 sm:p-8 rounded-xl shadow-md fade-in flex flex-col">
+
 
     <h1 class="text-3xl font-bold text-center text-purple-600 mb-8">
       <i class="fas fa-clipboard-question"></i> Check Your MCQs
@@ -64,44 +61,46 @@
     document.addEventListener("DOMContentLoaded", () => {
       const urlParams = new URLSearchParams(window.location.search);
       const quizId = urlParams.get("id");
-
+    
       if (!quizId) {
         alert("Quiz ID is missing in URL.");
         return;
       }
-
+    
       const storedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
       const quizResult = storedResults.find(result => String(result.quizId) === String(quizId));
-
+    
       if (!quizResult) {
         alert("Quiz result not found.");
         return;
       }
-
-      const questions = quizResult.questions;
+    
+      const questions = quizResult.questions || [];
       const questionsContainer = document.getElementById("questions-container");
-
+    
       questions.forEach((question, index) => {
         const correctAnswer = question.correct_answer || question.correct;
         const userSelected = question.userSelected;
         const allAnswers = [...question.incorrect_answers, correctAnswer].sort();
-
+    
+        // Create question container
         const questionElement = document.createElement('div');
-        questionElement.className = 'mb-8 fade-in';
-
+        questionElement.className = 'mb-10 fade-in';
+    
+        // Set question text
         questionElement.innerHTML = `
           <h2 class="text-lg sm:text-xl font-semibold mb-4 text-gray-700">Q${index + 1}: ${question.question}</h2>
-          <div class="space-y-2">
+          <div class="space-y-3">
             ${allAnswers.map(ans => {
               const isCorrect = ans === correctAnswer;
               const isUserSelected = ans === userSelected;
-
+    
               let icon = '';
               let colorClass = 'text-gray-700'; // Default
-
+    
               if (isUserSelected && isCorrect) {
                 icon = '<i class="fas fa-check-circle text-green-500 mr-2"></i>';
-                colorClass = 'text-green-500 font-semibold bg-green-50 px-4 py-2 rounded-lg';
+                colorClass = 'text-green-600 font-semibold bg-green-50 px-4 py-2 rounded-lg';
               } else if (isUserSelected && !isCorrect) {
                 icon = '<i class="fas fa-times-circle text-red-500 mr-2"></i>';
                 colorClass = 'text-red-500 font-semibold bg-red-50 px-4 py-2 rounded-lg';
@@ -109,23 +108,22 @@
                 icon = '<i class="fas fa-check-circle text-green-400 mr-2"></i>';
                 colorClass = 'text-green-400 bg-green-50 px-4 py-2 rounded-lg';
               } else {
-                colorClass = 'text-gray-700 bg-gray-50 px-4 py-2 rounded-lg';
+                colorClass = 'text-gray-700 bg-gray-100 px-4 py-2 rounded-lg';
               }
-
+    
               return `
-                <div class="flex items-center option ${colorClass}">
+                <div class="flex items-center ${colorClass}">
                   ${icon} ${ans}
                 </div>
               `;
             }).join('')}
           </div>
         `;
-
+    
         questionsContainer.appendChild(questionElement);
       });
-
     });
-  </script>
+    </script>    
 
 </body>
 
