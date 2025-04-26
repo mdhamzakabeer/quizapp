@@ -115,6 +115,7 @@ function showQuestion() {
 }
 
 // next
+// Next button click handler
 document.getElementById('next-btn').addEventListener('click', () => {
   const selected = document.querySelector('input[name="answer"]:checked');
   const currentQuestion = questions[currentIndex];
@@ -130,14 +131,15 @@ document.getElementById('next-btn').addEventListener('click', () => {
 
   currentIndex++;
 
-  if (quizId) saveProgress();
+  if (quizId) saveProgress();  // Save progress after each question
 
   if (currentIndex < questions.length) {
     showQuestion();
   } else {
-    showResult();
+    showResult();  // Show result when all questions are answered
   }
 });
+
 
 
 
@@ -180,6 +182,7 @@ function showResult() {
   document.getElementById('back-btn').style.display = 'none';
 }
 
+// Save local quiz progress
 // Save local quiz progress
 function saveProgress() {
   let quizData = JSON.parse(localStorage.getItem("quizResults")) || [];
