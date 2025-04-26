@@ -12,12 +12,23 @@ window.addEventListener('DOMContentLoaded', loadSavedQuizzes);
 setSubjectBtn.addEventListener('click', () => {
   const subject = subjectInput.value.trim();
   if (!subject) {
-    alert("Please enter a subject.");
+    showToast("Please enter a subject.", "error");
     return;
   }
+
+  const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
+  const isDuplicateSubject = stored.some(q => q.subject.toLowerCase() === subject.toLowerCase());
+
+  if (isDuplicateSubject) {
+    showToast("Subject already exists!", "error");
+    return;
+  }
+
   currentSubject = subject;
   document.getElementById('subject-section').classList.add('hidden');
   quizForm.classList.remove('hidden');
+  
+  showToast("Subject added successfully!", "success");
 });
 
 changeSubjectBtn.addEventListener('click', () => {
@@ -42,7 +53,17 @@ quizForm.addEventListener('submit', function(e) {
   const correct = document.getElementById('correct').value.trim().toUpperCase();
 
   if (!currentSubject || !question || !optionA || !optionB || !optionC || !optionD || !correct) {
-    alert("Please fill in all fields.");
+    showToast("Please fill in all fields.", "error");
+    return;
+  }
+
+  const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
+  const subjectQuiz = stored.find(q => q.subject.toLowerCase() === currentSubject.toLowerCase());
+
+  const isDuplicateQuestion = subjectQuiz?.questions.some(q => q.question.toLowerCase() === question.toLowerCase());
+
+  if (isDuplicateQuestion && !editingQuestionId) {
+    showToast("Question already exists!", "error");
     return;
   }
 
@@ -50,7 +71,7 @@ quizForm.addEventListener('submit', function(e) {
   const correctIndex = {A: 0, B: 1, C: 2, D: 3}[correct];
 
   if (correctIndex === undefined) {
-    alert("Correct answer must be A, B, C, or D");
+    showToast("Correct answer must be A, B, C, or D", "error");
     return;
   }
 
@@ -63,9 +84,6 @@ quizForm.addEventListener('submit', function(e) {
     correct_answer: correctAnswer,
     incorrect_answers: incorrectAnswers
   };
-
-  const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
-  let subjectQuiz = stored.find(q => q.subject.toLowerCase() === currentSubject.toLowerCase());
 
   if (subjectQuiz) {
     if (editingQuestionId) {
@@ -91,6 +109,8 @@ quizForm.addEventListener('submit', function(e) {
 
   quizForm.reset();
   editingQuestionId = null;
+
+  showToast("Question added successfully!", "success");
 });
 
 function addQuestionToUI(subject, q) {
@@ -98,17 +118,17 @@ function addQuestionToUI(subject, q) {
   li.className = "bg-white p-4 rounded-xl shadow-md border border-gray-200";
   li.setAttribute('data-id', q.id);
   li.innerHTML = `
-    <div class="mb-2 text-blue-600 font-bold text-lg">${subject}</div>
-    <div class="font-medium mb-1">${q.question}</div>
+    <div class="mb-2 text-blue-600 font-bold text-lg"><i class="fas fa-book"></i> ${subject}</div>
+    <div class="font-medium mb-1"><i class="fas fa-question-circle"></i> ${q.question}</div>
     <ul class="text-sm text-gray-700 mb-2 space-y-1">
       ${[...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5).map((opt, i) => 
         `<li><strong>${String.fromCharCode(65 + i)}:</strong> ${opt}</li>`
       ).join('')}
     </ul>
-    <div class="text-green-600 text-sm font-semibold mb-2">Correct Answer: ${q.correct_answer}</div>
+    <div class="text-green-600 text-sm font-semibold mb-2"><i class="fas fa-check-circle"></i> Correct Answer: ${q.correct_answer}</div>
     <div class="flex gap-3">
-      <button class="edit-btn bg-yellow-100 text-yellow-700 px-4 py-1 rounded hover:bg-yellow-200 transition">✏️ Edit</button>
-      <button class="delete-btn bg-red-100 text-red-600 px-4 py-1 rounded hover:bg-red-200 transition">🗑️ Delete</button>
+      <button class="edit-btn bg-yellow-100 text-yellow-700 px-4 py-1 rounded hover:bg-yellow-200 transition"><i class="fas fa-edit"></i> Edit</button>
+      <button class="delete-btn bg-red-100 text-red-600 px-4 py-1 rounded hover:bg-red-200 transition"><i class="fas fa-trash"></i> Delete</button>
     </div>
   `;
   questionList.appendChild(li);
@@ -118,17 +138,17 @@ function updateQuestionInUI(subject, q) {
   const li = document.querySelector(`li[data-id="${q.id}"]`);
   if (!li) return;
   li.innerHTML = `
-    <div class="mb-2 text-blue-600 font-bold text-lg">${subject}</div>
-    <div class="font-medium mb-1">${q.question}</div>
+    <div class="mb-2 text-blue-600 font-bold text-lg"><i class="fas fa-book"></i> ${subject}</div>
+    <div class="font-medium mb-1"><i class="fas fa-question-circle"></i> ${q.question}</div>
     <ul class="text-sm text-gray-700 mb-2 space-y-1">
       ${[...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5).map((opt, i) => 
         `<li><strong>${String.fromCharCode(65 + i)}:</strong> ${opt}</li>`
       ).join('')}
     </ul>
-    <div class="text-green-600 text-sm font-semibold mb-2">Correct Answer: ${q.correct_answer}</div>
+    <div class="text-green-600 text-sm font-semibold mb-2"><i class="fas fa-check-circle"></i> Correct Answer: ${q.correct_answer}</div>
     <div class="flex gap-3">
-      <button class="edit-btn bg-yellow-100 text-yellow-700 px-4 py-1 rounded hover:bg-yellow-200 transition">✏️ Edit</button>
-      <button class="delete-btn bg-red-100 text-red-600 px-4 py-1 rounded hover:bg-red-200 transition">🗑️ Delete</button>
+      <button class="edit-btn bg-yellow-100 text-yellow-700 px-4 py-1 rounded hover:bg-yellow-200 transition"><i class="fas fa-edit"></i> Edit</button>
+      <button class="delete-btn bg-red-100 text-red-600 px-4 py-1 rounded hover:bg-red-200 transition"><i class="fas fa-trash"></i> Delete</button>
     </div>
   `;
 }
@@ -149,7 +169,7 @@ questionList.addEventListener('click', function(e) {
   const subject = li.querySelector('div').textContent.trim();
   const questionId = li.getAttribute('data-id');
 
-  if (e.target.classList.contains('delete-btn')) {
+  if (e.target.classList.contains('delete-btn') || e.target.closest('.delete-btn')) {
     li.remove();
     let stored = JSON.parse(localStorage.getItem("quizzes")) || [];
     stored = stored.map(q => {
@@ -159,9 +179,10 @@ questionList.addEventListener('click', function(e) {
       return q;
     }).filter(q => q.questions.length > 0);
     localStorage.setItem("quizzes", JSON.stringify(stored));
+    showToast("Question deleted successfully!", "success");
   }
 
-  if (e.target.classList.contains('edit-btn')) {
+  if (e.target.classList.contains('edit-btn') || e.target.closest('.edit-btn')) {
     const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
     const subjectQuiz = stored.find(q => q.subject === subject);
     const questionToEdit = subjectQuiz?.questions.find(q => q.id === questionId);
@@ -182,3 +203,14 @@ questionList.addEventListener('click', function(e) {
     }
   }
 });
+
+function showToast(message, type = "success") {
+  Toastify({
+    text: message,
+    duration: 3000,
+    gravity: "top",
+    position: "right",
+    backgroundColor: type === "success" ? "#4CAF50" : "#f44336",
+    stopOnFocus: true,
+  }).showToast();
+}
