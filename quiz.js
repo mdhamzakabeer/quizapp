@@ -50,10 +50,12 @@ async function fetchQuestionsFromAPI(categoryId) {
     questions = data.results.map(q => ({
       question: decodeHtml(q.question),
       correct_answer: decodeHtml(q.correct_answer),
-      incorrect_answers: q.incorrect_answers.map(decodeHtml)
+      incorrect_answers: q.incorrect_answers.map(decodeHtml),
+      userSelected: null // ✅ important addition
     }));
 
-    quizId = Date.now().toString(); // ✅ yahan quizId banana zaroori hai
+    quizId = Date.now().toString(); // ✅ important
+    subjectName = subjectName || "API Quiz"; // ✅ in case subjectName is empty
 
     currentIndex = 0;
     score = 0;
@@ -124,7 +126,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
 
   if (selected) {
     const selectedAnswer = selected.value.trim().toLowerCase();
-    currentQuestion.userSelected = selected.value; // Save selected answer
+    currentQuestion.userSelected = selected.value; // ✅ Save selected answer
     if (selectedAnswer === correctAnswer) {
       score++;
     }
@@ -132,7 +134,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
 
   currentIndex++;
 
-  saveProgress(); // ✅ Always save after next
+  saveProgress(); // ✅ Save after next
 
   if (currentIndex < questions.length) {
     showQuestion();
@@ -153,7 +155,7 @@ document.getElementById('back-btn').addEventListener('click', () => {
 function showResult() {
   const container = document.getElementById('question-container');
 
-  saveProgress(); // ✅ save last time on finish
+  saveProgress(); // ✅ Save at finish too
 
   container.innerHTML = `
     <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
