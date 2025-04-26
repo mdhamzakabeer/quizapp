@@ -11,19 +11,18 @@
       font-family: 'Inter', sans-serif;
       background-color: #f8fafc;
     }
-
     .card {
       background: linear-gradient(to top left, #ffffff, #f9fafb);
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+      position: relative;
     }
-
     .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.08);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
     }
-
     .badge {
-      @apply text-xs font-bold px-3 py-1 rounded-full;
+      @apply text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap flex items-center gap-1;
     }
   </style>
 </head>
@@ -38,25 +37,25 @@
       <p class="text-gray-500 text-md mt-2">Track your performance, level up, and grow smarter 🚀</p>
     </div>
 
-    <!-- 🔴 Clear All Results Button -->
+    <!-- Clear All Results Button -->
     <div class="flex justify-end mb-4">
       <button id="clearAllResults" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
         <i class="fa-solid fa-trash-can"></i> Clear All Results
       </button>
     </div>
 
-    <!-- 🔵 Cards Go Here -->
+    <!-- Cards -->
     <div id="resultsContainer" class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-      <!-- Cards Will Be Injected Here -->
+      <!-- Cards will be injected here -->
     </div>
   </div>
 
-  <script>
-  document.addEventListener("DOMContentLoaded", () => {
+<script>
+document.addEventListener("DOMContentLoaded", () => {
   const resultsContainer = document.getElementById("resultsContainer");
-  
+
   function loadResults() {
-    resultsContainer.innerHTML = ""; // Sab cards hata do
+    resultsContainer.innerHTML = "";
     const storedResults = localStorage.getItem("quizResults");
     const results = storedResults ? JSON.parse(storedResults) : [];
 
@@ -75,26 +74,32 @@
       const level = getLevel(percent);
 
       const card = document.createElement("div");
-      card.className = "card rounded-2xl p-6 shadow-lg flex flex-col gap-4 hover:shadow-2xl";
+      card.className = "card rounded-2xl p-6 shadow-lg flex flex-col gap-5";
+
       card.innerHTML = `
-        <div class="flex justify-between items-center">
-          <div class="flex items-center gap-2 text-lg font-semibold text-gray-700 truncate">
-            <i class="fa-solid fa-book text-blue-500"></i> ${result.subject || 'Unknown'}
-          </div>
+        <!-- Badge -->
+        <div class="absolute top-4 right-4">
           <span class="badge ${level.color}">
-            <i class="${level.icon} me-1"></i>${level.name} - ${percent}%
+            <i class="${level.icon}"></i> ${level.name} - ${percent}%
           </span>
         </div>
 
+        <!-- Subject -->
+        <div class="flex items-center gap-2 text-xl font-bold text-gray-800 truncate">
+          <i class="fa-solid fa-book text-blue-500 text-2xl"></i>
+          <span class="truncate">${result.subject || 'Unknown'}</span>
+        </div>
+
+        <!-- Date -->
         <div class="flex items-center gap-2 text-sm text-gray-400">
           <i class="fa-regular fa-calendar-days"></i>
           <span>${result.date || new Date().toLocaleString()}</span>
         </div>
 
-        <div class="mt-2">
+        <!-- Health Level -->
+        <div class="mt-3">
           <p class="text-gray-600 font-semibold text-sm mb-1">Health Level</p>
-          <div class="relative h-4 rounded-full"
-            style="background: linear-gradient(to right, #38BDF8, #A78BFA, #F472B6);">
+          <div class="relative h-4 rounded-full bg-gradient-to-r from-sky-400 via-purple-400 to-pink-400">
             <div class="absolute top-[-6px] w-1 h-6 bg-blue-900 rounded"
               style="left: ${percent}%; transform: translateX(-50%);"></div>
           </div>
@@ -103,30 +108,32 @@
           </div>
         </div>
 
-        <div class="flex flex-col mt-4">
-          <p class="text-gray-400 text-sm">Score</p>
-          <div class="flex items-end justify-between mt-1">
-            <p class="text-2xl font-extrabold text-blue-600">${percent}%</p>
-            <p class="text-gray-500 text-sm">(${score} out of ${total})</p>
+        <!-- Score -->
+        <div class="flex justify-between items-end mt-4">
+          <div>
+            <p class="text-gray-400 text-sm">Score</p>
+            <p class="text-3xl font-extrabold text-blue-600 mt-1">${percent}%</p>
           </div>
+          <p class="text-gray-500 text-sm">(${score} out of ${total})</p>
         </div>
 
-        <a href="checkmcqs.html?id=${result.quizId}" class="text-sm text-blue-600 underline mt-3 self-end">
-          <i class="fa-solid fa-check-circle"></i> Check MCQs
-        </a>
-
-        <button class="text-sm text-red-600 underline mt-3 self-end delete-btn" data-index="${index}">
-          <i class="fa-solid fa-trash"></i> Delete
-        </button>
+        <!-- Actions -->
+        <div class="flex justify-between items-center mt-4">
+          <a href="checkmcqs.html?id=${result.quizId}" class="text-blue-600 text-sm underline hover:text-blue-800">
+            <i class="fa-solid fa-check-circle"></i> Check MCQs
+          </a>
+          <button class="text-red-600 text-sm underline delete-btn hover:text-red-800" data-index="${index}">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </div>
       `;
 
       resultsContainer.appendChild(card);
     });
   }
 
-  loadResults(); // Pehli baar load hote hi
+  loadResults();
 
-  // Delete ka listener
   document.addEventListener('click', (e) => {
     const deleteBtn = e.target.closest('.delete-btn');
     if (deleteBtn) {
@@ -134,15 +141,14 @@
       const storedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
       storedResults.splice(index, 1);
       localStorage.setItem("quizResults", JSON.stringify(storedResults));
-      loadResults(); // FIR SE FRESH LOAD karo bina reload() ke
+      loadResults();
     }
   });
 
-  // Clear all
   document.getElementById("clearAllResults")?.addEventListener("click", () => {
     if (confirm("Are you sure you want to delete all results?")) {
       localStorage.removeItem("quizResults");
-      loadResults(); // FIR SE FRESH LOAD karo
+      loadResults();
     }
   });
 
@@ -153,7 +159,7 @@
     return { name: "Beginner", color: "bg-red-100 text-red-600", icon: "fa-solid fa-seedling" };
   }
 });
+</script>
 
-  </script>
 </body>
 </html>
