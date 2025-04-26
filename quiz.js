@@ -52,6 +52,9 @@ async function fetchQuestionsFromAPI(categoryId) {
       correct_answer: decodeHtml(q.correct_answer),
       incorrect_answers: q.incorrect_answers.map(decodeHtml)
     }));
+
+    quizId = Date.now().toString(); // ✅ yahan quizId banana zaroori hai
+
     currentIndex = 0;
     score = 0;
     showQuestion();
@@ -113,7 +116,7 @@ function showQuestion() {
   document.getElementById('back-btn').style.display = currentIndex === 0 ? 'none' : 'inline-block';
 }
 
-// next
+// Next button
 document.getElementById('next-btn').addEventListener('click', () => {
   const selected = document.querySelector('input[name="answer"]:checked');
   const currentQuestion = questions[currentIndex];
@@ -121,7 +124,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
 
   if (selected) {
     const selectedAnswer = selected.value.trim().toLowerCase();
-    currentQuestion.userSelected = selected.value; // Store the selected answer
+    currentQuestion.userSelected = selected.value; // Save selected answer
     if (selectedAnswer === correctAnswer) {
       score++;
     }
@@ -129,7 +132,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
 
   currentIndex++;
 
-  if (quizId) saveProgress();
+  saveProgress(); // ✅ Always save after next
 
   if (currentIndex < questions.length) {
     showQuestion();
@@ -138,7 +141,7 @@ document.getElementById('next-btn').addEventListener('click', () => {
   }
 });
 
-// Back
+// Back button
 document.getElementById('back-btn').addEventListener('click', () => {
   if (currentIndex > 0) {
     currentIndex--;
@@ -146,10 +149,11 @@ document.getElementById('back-btn').addEventListener('click', () => {
   }
 });
 
-// Result
+// Show Result
 function showResult() {
   const container = document.getElementById('question-container');
-  if (quizId) saveProgress();
+
+  saveProgress(); // ✅ save last time on finish
 
   container.innerHTML = `
     <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
@@ -162,9 +166,9 @@ function showResult() {
   document.getElementById('back-btn').style.display = 'none';
 }
 
-// Save local quiz progress
+// Save Progress
 function saveProgress() {
-  quizId = quizId || Date.now().toString();  // Ensure quizId exists
+  quizId = quizId || Date.now().toString();
   let quizData = JSON.parse(localStorage.getItem("quizResults")) || [];
   let savedQuiz = quizData.find(item => item.quizId === quizId);
 
@@ -172,7 +176,9 @@ function saveProgress() {
     savedQuiz.score = score;
     savedQuiz.currentIndex = currentIndex;
     savedQuiz.date = new Date().toLocaleString();
-    savedQuiz.questions = questions;  // Save updated questions
+    savedQuiz.questions = questions;
+    savedQuiz.total = questions.length;
+    savedQuiz.subject = subjectName;
   } else {
     quizData.push({
       quizId: quizId,
@@ -188,7 +194,7 @@ function saveProgress() {
   localStorage.setItem("quizResults", JSON.stringify(quizData));
 }
 
-// Quit
+// Quit button
 document.getElementById('quit-btn').addEventListener('click', () => {
   Swal.fire({
     title: 'Are you sure?',
