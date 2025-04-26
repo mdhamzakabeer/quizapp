@@ -101,27 +101,53 @@ document.addEventListener("DOMContentLoaded", () => {
     cardContainer.appendChild(createCard);
   };
   
-  
-  
-  
-  
-  // Show/hide nav items
-  
-  const loginNav = document.getElementById("login-nav");
-  const signupNav = document.getElementById("signup-nav");
-  const logoutNav = document.getElementById("logout-nav");
+ // Show/hide nav items
+const loginNav = document.getElementById("login-nav");
+const signupNav = document.getElementById("signup-nav");
+const logoutNav = document.getElementById("logout-nav");
 
+// 👇 NEW: Mobile nav IDs
+const mobileLoginNav = document.getElementById("mobile-login-nav");
+const mobileSignupNav = document.getElementById("mobile-signup-nav");
+const mobileLogoutNav = document.getElementById("mobile-logout-nav");
+
+if (isLoggedIn) {
+  // ✅ If user is logged in
   if (loginNav) loginNav.style.display = "none";
   if (signupNav) signupNav.style.display = "none";
   if (logoutNav) logoutNav.style.display = "block";
 
-  // Logout
-  if (logoutNav) {
-    logoutNav.addEventListener("click", () => {
-      localStorage.removeItem("isLogin");
-      window.location.href = "login/signUp/quiz-form-login.html";
-    });
-  }
+  if (mobileLoginNav) mobileLoginNav.style.display = "none";
+  if (mobileSignupNav) mobileSignupNav.style.display = "none";
+  if (mobileLogoutNav) mobileLogoutNav.style.display = "block";
+} else {
+  // ✅ If user is NOT logged in
+  if (loginNav) loginNav.style.display = "block";
+  if (signupNav) signupNav.style.display = "block";
+  if (logoutNav) logoutNav.style.display = "none";
+
+  if (mobileLoginNav) mobileLoginNav.style.display = "block";
+  if (mobileSignupNav) mobileSignupNav.style.display = "block";
+  if (mobileLogoutNav) mobileLogoutNav.style.display = "none";
+}
+
+// Logout
+if (logoutNav) {
+  logoutNav.addEventListener("click", () => {
+    localStorage.removeItem("isLogin");
+    window.location.href = "login/signUp/quiz-form-login.html";
+  });
+}
+// 👇 NEW: Mobile Logout
+if (mobileLogoutNav) {
+  mobileLogoutNav.addEventListener("click", () => {
+    localStorage.removeItem("isLogin");
+    window.location.href = "login/signUp/quiz-form-login.html";
+  });
+}
+ 
+  
+
 // Fetch dropdown quiz categories
 
 let data=null;
