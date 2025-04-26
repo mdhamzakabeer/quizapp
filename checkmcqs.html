@@ -33,7 +33,9 @@
 
       // Get stored results
       const storedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
-      const quizResult = storedResults.find(result => result.quizId === quizId);
+     // New (sahi):
+const quizResult = storedResults.find(result => String(result.quizId) === String(quizId));
+
 
       if (!quizResult) {
         alert("Quiz result not found.");

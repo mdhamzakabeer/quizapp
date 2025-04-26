@@ -182,6 +182,7 @@ function showResult() {
 
 // Save local quiz progress
 function saveProgress() {
+  quizId = quizId || Date.now().toString();  // << ADD THIS
   let quizData = JSON.parse(localStorage.getItem("quizResults")) || [];
   let savedQuiz = quizData.find(item => item.quizId === quizId);
 
