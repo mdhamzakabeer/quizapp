@@ -74,6 +74,7 @@ quizForm.addEventListener('submit', function(e) {
 function addQuestionToUI(subject, q) {
   const li = document.createElement('li');
   li.className = "bg-white p-4 rounded-xl shadow-md border border-gray-200";
+  li.setAttribute('data-id', q.id); // 🛠️ Add this line here
   li.innerHTML = `
     <div class="mb-2 text-blue-600 font-bold text-lg">${subject}</div>
     <div class="font-medium mb-1">${q.question}</div>
@@ -91,6 +92,7 @@ function addQuestionToUI(subject, q) {
   `;
   questionList.appendChild(li);
 }
+
 
 // Update an existing question in the UI
 function updateQuestionInUI(subject, q) {
@@ -126,11 +128,14 @@ function loadSavedQuizzes() {
 
 // Delete functionality
 questionList.addEventListener('click', function(e) {
-  if (e.target.classList.contains('delete-btn')) {
-    const li = e.target.closest('li');
-    const subject = li.querySelector('div').textContent.trim();
-    const questionText = li.querySelector('.font-medium').textContent.trim();
+  const li = e.target.closest('li');
+  if (!li) return;
 
+  const subject = li.querySelector('div').textContent.trim();
+  const questionId = li.getAttribute('data-id'); // 🛠️ Use data-id here
+
+  // 🗑️ DELETE logic
+  if (e.target.classList.contains('delete-btn')) {
     // Remove from UI
     li.remove();
 
@@ -138,7 +143,7 @@ questionList.addEventListener('click', function(e) {
     let stored = JSON.parse(localStorage.getItem("quizzes")) || [];
     stored = stored.map(q => {
       if (q.subject === subject) {
-        q.questions = q.questions.filter(ques => ques.question !== questionText);
+        q.questions = q.questions.filter(ques => ques.id !== questionId);
       }
       return q;
     }).filter(q => q.questions.length > 0);
@@ -146,19 +151,14 @@ questionList.addEventListener('click', function(e) {
     localStorage.setItem("quizzes", JSON.stringify(stored));
   }
 
+  // ✏️ EDIT logic
   if (e.target.classList.contains('edit-btn')) {
-    const li = e.target.closest('li');
-    const subject = li.querySelector('div').textContent.trim();
-    const questionText = li.querySelector('.font-medium').textContent.trim();
-
-    // Find the question data
     const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
-    const questionToEdit = stored
-      .flatMap(q => q.questions)
-      .find(q => q.question === questionText);
+    const subjectQuiz = stored.find(q => q.subject === subject);
+    const questionToEdit = subjectQuiz?.questions.find(q => q.id === questionId);
 
     if (questionToEdit) {
-      // Populate the form with existing question data
+      // Populate form fields
       document.getElementById('subject-input').value = subject;
       document.getElementById('question').value = questionToEdit.question;
       document.getElementById('optionA').value = questionToEdit.options[0];
@@ -167,7 +167,6 @@ questionList.addEventListener('click', function(e) {
       document.getElementById('optionD').value = questionToEdit.options[3];
       document.getElementById('correct').value = questionToEdit.correct;
 
-      // Set the editing ID
       editingQuestionId = questionToEdit.id;
     }
   }
