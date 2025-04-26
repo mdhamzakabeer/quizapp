@@ -1,20 +1,50 @@
+const subjectInput = document.getElementById('subject-input');
+const setSubjectBtn = document.getElementById('set-subject-btn');
 const quizForm = document.getElementById('quiz-form');
 const questionList = document.getElementById('question-list');
+const changeSubjectBtn = document.getElementById('change-subject-btn');
 
-let editingQuestionId = null; // Track which question is being edited
+let currentSubject = null;
+let editingQuestionId = null;
 
-// Load saved quizzes on page load
 window.addEventListener('DOMContentLoaded', loadSavedQuizzes);
+
+setSubjectBtn.addEventListener('click', () => {
+  const subject = subjectInput.value.trim();
+  if (!subject) {
+    showToast("Please enter a subject.", "error");
+    return;
+  }
+
+  const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
+  const isDuplicateSubject = stored.some(q => q.subject.toLowerCase() === subject.toLowerCase());
+
+  if (isDuplicateSubject) {
+    showToast("Subject already exists!", "error");
+    return;
+  }
+
+  currentSubject = subject;
+  document.getElementById('subject-section').classList.add('hidden');
+  quizForm.classList.remove('hidden');
+  
+  showToast("Subject added successfully!", "success");
+});
+
+changeSubjectBtn.addEventListener('click', () => {
+  currentSubject = null;
+  subjectInput.value = '';
+  quizForm.classList.add('hidden');
+  document.getElementById('subject-section').classList.remove('hidden');
+});
 
 function generateId() {
   return 'q_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
 }
 
-// Submit handler (add new or update existing question)
 quizForm.addEventListener('submit', function(e) {
   e.preventDefault();
 
-  const subject = document.getElementById('subject-input').value.trim();
   const question = document.getElementById('question').value.trim();
   const optionA = document.getElementById('optionA').value.trim();
   const optionB = document.getElementById('optionB').value.trim();
@@ -22,36 +52,49 @@ quizForm.addEventListener('submit', function(e) {
   const optionD = document.getElementById('optionD').value.trim();
   const correct = document.getElementById('correct').value.trim().toUpperCase();
 
-  if (!subject || !question || !optionA || !optionB || !optionC || !optionD || !correct) {
-    alert("Please fill in all fields.");
+  if (!currentSubject || !question || !optionA || !optionB || !optionC || !optionD || !correct) {
+    showToast("Please fill in all fields.", "error");
     return;
   }
 
-  const newQuestion = {
-    question,
-    id: editingQuestionId || generateId(), // Use editingQuestionId if it's an update
-    options: [optionA, optionB, optionC, optionD],
-    correct
-  };
-
   const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
-  let subjectQuiz = stored.find(q => q.subject.toLowerCase() === subject.toLowerCase());
+  const subjectQuiz = stored.find(q => q.subject.toLowerCase() === currentSubject.toLowerCase());
+
+  const isDuplicateQuestion = subjectQuiz?.questions.some(q => q.question.toLowerCase() === question.toLowerCase());
+
+  if (isDuplicateQuestion && !editingQuestionId) {
+    showToast("Question already exists!", "error");
+    return;
+  }
+
+  const options = [optionA, optionB, optionC, optionD];
+  const correctIndex = {A: 0, B: 1, C: 2, D: 3}[correct];
+
+  if (correctIndex === undefined) {
+    showToast("Correct answer must be A, B, C, or D", "error");
+    return;
+  }
+
+  const correctAnswer = options[correctIndex];
+  const incorrectAnswers = options.filter((opt, idx) => idx !== correctIndex);
+
+  const newQuestion = {
+    id: editingQuestionId || generateId(),
+    question,
+    correct_answer: correctAnswer,
+    incorrect_answers: incorrectAnswers
+  };
 
   if (subjectQuiz) {
     if (editingQuestionId) {
-      // Update existing question
-      subjectQuiz.questions = subjectQuiz.questions.map(q => 
-        q.id === editingQuestionId ? newQuestion : q
-      );
+      subjectQuiz.questions = subjectQuiz.questions.map(q => q.id === editingQuestionId ? newQuestion : q);
     } else {
-      // Add new question
       subjectQuiz.questions.push(newQuestion);
     }
   } else {
-    // Create new subject and add question
     stored.push({
-      id: generateId(), // Add this
-      subject,
+      id: generateId(),
+      subject: currentSubject,
       questions: [newQuestion]
     });
   }
@@ -59,62 +102,57 @@ quizForm.addEventListener('submit', function(e) {
   localStorage.setItem("quizzes", JSON.stringify(stored));
 
   if (editingQuestionId) {
-    // Update question in the UI
-    updateQuestionInUI(subject, newQuestion);
+    updateQuestionInUI(currentSubject, newQuestion);
   } else {
-    // Add new question to the UI
-    addQuestionToUI(subject, newQuestion);
+    addQuestionToUI(currentSubject, newQuestion);
   }
 
   quizForm.reset();
-  editingQuestionId = null; // Reset the editing state
+  editingQuestionId = null;
+
+  showToast("Question added successfully!", "success");
 });
 
-// Render a single question in the UI
 function addQuestionToUI(subject, q) {
   const li = document.createElement('li');
   li.className = "bg-white p-4 rounded-xl shadow-md border border-gray-200";
+  li.setAttribute('data-id', q.id);
   li.innerHTML = `
-    <div class="mb-2 text-blue-600 font-bold text-lg">${subject}</div>
-    <div class="font-medium mb-1">${q.question}</div>
+    <div class="mb-2 text-blue-600 font-bold text-lg"><i class="fas fa-book"></i> ${subject}</div>
+    <div class="font-medium mb-1"><i class="fas fa-question-circle"></i> ${q.question}</div>
     <ul class="text-sm text-gray-700 mb-2 space-y-1">
-      <li><strong>A:</strong> ${q.options[0]}</li>
-      <li><strong>B:</strong> ${q.options[1]}</li>
-      <li><strong>C:</strong> ${q.options[2]}</li>
-      <li><strong>D:</strong> ${q.options[3]}</li>
+      ${[...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5).map((opt, i) => 
+        `<li><strong>${String.fromCharCode(65 + i)}:</strong> ${opt}</li>`
+      ).join('')}
     </ul>
-    <div class="text-green-600 text-sm font-semibold mb-2">Correct Answer: ${q.correct}</div>
+    <div class="text-green-600 text-sm font-semibold mb-2"><i class="fas fa-check-circle"></i> Correct Answer: ${q.correct_answer}</div>
     <div class="flex gap-3">
-      <button class="edit-btn bg-yellow-100 text-yellow-700 px-4 py-1 rounded hover:bg-yellow-200 transition">✏️ Edit</button>
-      <button class="delete-btn bg-red-100 text-red-600 px-4 py-1 rounded hover:bg-red-200 transition">🗑️ Delete</button>
+      <button class="edit-btn bg-yellow-100 text-yellow-700 px-4 py-1 rounded hover:bg-yellow-200 transition"><i class="fas fa-edit"></i> Edit</button>
+      <button class="delete-btn bg-red-100 text-red-600 px-4 py-1 rounded hover:bg-red-200 transition"><i class="fas fa-trash"></i> Delete</button>
     </div>
   `;
   questionList.appendChild(li);
 }
 
-// Update an existing question in the UI
 function updateQuestionInUI(subject, q) {
   const li = document.querySelector(`li[data-id="${q.id}"]`);
   if (!li) return;
-
   li.innerHTML = `
-    <div class="mb-2 text-blue-600 font-bold text-lg">${subject}</div>
-    <div class="font-medium mb-1">${q.question}</div>
+    <div class="mb-2 text-blue-600 font-bold text-lg"><i class="fas fa-book"></i> ${subject}</div>
+    <div class="font-medium mb-1"><i class="fas fa-question-circle"></i> ${q.question}</div>
     <ul class="text-sm text-gray-700 mb-2 space-y-1">
-      <li><strong>A:</strong> ${q.options[0]}</li>
-      <li><strong>B:</strong> ${q.options[1]}</li>
-      <li><strong>C:</strong> ${q.options[2]}</li>
-      <li><strong>D:</strong> ${q.options[3]}</li>
+      ${[...q.incorrect_answers, q.correct_answer].sort(() => Math.random() - 0.5).map((opt, i) => 
+        `<li><strong>${String.fromCharCode(65 + i)}:</strong> ${opt}</li>`
+      ).join('')}
     </ul>
-    <div class="text-green-600 text-sm font-semibold mb-2">Correct Answer: ${q.correct}</div>
+    <div class="text-green-600 text-sm font-semibold mb-2"><i class="fas fa-check-circle"></i> Correct Answer: ${q.correct_answer}</div>
     <div class="flex gap-3">
-      <button class="edit-btn bg-yellow-100 text-yellow-700 px-4 py-1 rounded hover:bg-yellow-200 transition">✏️ Edit</button>
-      <button class="delete-btn bg-red-100 text-red-600 px-4 py-1 rounded hover:bg-red-200 transition">🗑️ Delete</button>
+      <button class="edit-btn bg-yellow-100 text-yellow-700 px-4 py-1 rounded hover:bg-yellow-200 transition"><i class="fas fa-edit"></i> Edit</button>
+      <button class="delete-btn bg-red-100 text-red-600 px-4 py-1 rounded hover:bg-red-200 transition"><i class="fas fa-trash"></i> Delete</button>
     </div>
   `;
 }
 
-// Load existing data from localStorage on page load
 function loadSavedQuizzes() {
   const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
   stored.forEach(quiz => {
@@ -124,51 +162,55 @@ function loadSavedQuizzes() {
   });
 }
 
-// Delete functionality
 questionList.addEventListener('click', function(e) {
-  if (e.target.classList.contains('delete-btn')) {
-    const li = e.target.closest('li');
-    const subject = li.querySelector('div').textContent.trim();
-    const questionText = li.querySelector('.font-medium').textContent.trim();
+  const li = e.target.closest('li');
+  if (!li) return;
 
-    // Remove from UI
+  const subject = li.querySelector('div').textContent.trim();
+  const questionId = li.getAttribute('data-id');
+
+  if (e.target.classList.contains('delete-btn') || e.target.closest('.delete-btn')) {
     li.remove();
-
-    // Remove from localStorage
     let stored = JSON.parse(localStorage.getItem("quizzes")) || [];
     stored = stored.map(q => {
       if (q.subject === subject) {
-        q.questions = q.questions.filter(ques => ques.question !== questionText);
+        q.questions = q.questions.filter(ques => ques.id !== questionId);
       }
       return q;
     }).filter(q => q.questions.length > 0);
-
     localStorage.setItem("quizzes", JSON.stringify(stored));
+    showToast("Question deleted successfully!", "success");
   }
 
-  if (e.target.classList.contains('edit-btn')) {
-    const li = e.target.closest('li');
-    const subject = li.querySelector('div').textContent.trim();
-    const questionText = li.querySelector('.font-medium').textContent.trim();
-
-    // Find the question data
+  if (e.target.classList.contains('edit-btn') || e.target.closest('.edit-btn')) {
     const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
-    const questionToEdit = stored
-      .flatMap(q => q.questions)
-      .find(q => q.question === questionText);
+    const subjectQuiz = stored.find(q => q.subject === subject);
+    const questionToEdit = subjectQuiz?.questions.find(q => q.id === questionId);
 
     if (questionToEdit) {
-      // Populate the form with existing question data
-      document.getElementById('subject-input').value = subject;
+      currentSubject = subject;
+      document.getElementById('subject-section').classList.add('hidden');
+      quizForm.classList.remove('hidden');
+      
       document.getElementById('question').value = questionToEdit.question;
-      document.getElementById('optionA').value = questionToEdit.options[0];
-      document.getElementById('optionB').value = questionToEdit.options[1];
-      document.getElementById('optionC').value = questionToEdit.options[2];
-      document.getElementById('optionD').value = questionToEdit.options[3];
-      document.getElementById('correct').value = questionToEdit.correct;
-
-      // Set the editing ID
+      const allOptions = [...questionToEdit.incorrect_answers, questionToEdit.correct_answer];
+      document.getElementById('optionA').value = allOptions[0] || '';
+      document.getElementById('optionB').value = allOptions[1] || '';
+      document.getElementById('optionC').value = allOptions[2] || '';
+      document.getElementById('optionD').value = allOptions[3] || '';
+      document.getElementById('correct').value = ['A', 'B', 'C', 'D'][allOptions.indexOf(questionToEdit.correct_answer)];
       editingQuestionId = questionToEdit.id;
     }
   }
 });
+
+function showToast(message, type = "success") {
+  Toastify({
+    text: message,
+    duration: 3000,
+    gravity: "top",
+    position: "right",
+    backgroundColor: type === "success" ? "#4CAF50" : "#f44336",
+    stopOnFocus: true,
+  }).showToast();
+}

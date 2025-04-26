@@ -1,41 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up - Grow Quiz App</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </head>
-<body class="bg-gradient-to-r from-purple-600 to-blue-500 h-screen flex items-center justify-center">
-  <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Create Your Grow Quiz Account</h2>
-    <form id="signUPForm" action="#">
-      <div class="mb-4">
-        <label class="block text-gray-700">Username</label>
-        <input type="text" id="username" name="username" required class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4">
+
+  <div class="w-full max-w-sm bg-white rounded-3xl shadow-xl p-8 space-y-6">
+    <div class="text-center">
+      <h2 class="text-3xl font-extrabold text-gray-800">Create Account</h2>
+      <p class="text-gray-500 text-sm">Join the Grow Quiz App today</p>
+    </div>
+
+    <form id="signUPForm" action="#" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Username</label>
+        <input type="text" id="username" name="username" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
       </div>
-      <div class="mb-4">
-        <label class="block text-gray-700">Password</label>
-        <input type="password" id="password" name="password" required class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" id="password" name="password" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
       </div>
-      <div class="mb-6">
-        <label class="block text-gray-700">Confirm Password</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" required class="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400">
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" required class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
       </div>
-      <button type="submit" class="w-full bg-purple-500 text-white py-2 rounded-md hover:bg-purple-600 transition">Sign Up</button>
+
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+        Sign Up
+      </button>
     </form>
-    <p class="mt-4 text-center text-sm text-gray-600">
+
+    <div class="text-center text-sm text-gray-600">
       Already have an account?
-      <a href="quiz-form-login.html" class="text-purple-500 hover:underline">Login</a>
-    </p>
+      <a href="quiz-form-login.html" class="text-blue-600 hover:underline font-medium">Login</a>
+    </div>
   </div>
 
-  <script src="formauth.js">
-
-  </script>
+  <script src="formauth.js"></script>
 </body>
 </html>
