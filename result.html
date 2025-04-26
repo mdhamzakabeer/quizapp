@@ -53,9 +53,11 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const resultsContainer = document.getElementById("resultsContainer");
-      const storedResults = localStorage.getItem("quizResults");
-      const results = storedResults ? JSON.parse(storedResults) : [];
+  const resultsContainer = document.getElementById("resultsContainer");
+  resultsContainer.innerHTML = ""; // 🧹 Saaf karo purane results ko
+  const storedResults = localStorage.getItem("quizResults");
+  const results = storedResults ? JSON.parse(storedResults) : [];
+
 
       if (results.length === 0) {
         resultsContainer.innerHTML = `
