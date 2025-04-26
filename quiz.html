@@ -37,24 +37,54 @@
 
   <!-- Quiz Card -->
   <main class="flex-grow flex items-center justify-center px-4">
-    <div class="w-full max-w-xl bg-white p-6 rounded-2xl shadow-2xl">
+    <div class="w-full max-w-3xl bg-white p-8 rounded-2xl shadow-2xl">
       <div id="question-container" class="mb-6">
-        <!-- Questions will be inserted here -->
+
+        <h2 class="text-xl font-bold mb-6">Q1: This movie contains the quote, "Nobody puts Baby in a corner."</h2>
+
+        <div class="grid gap-4">
+          <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition hover:border-blue-400">
+            <input type="radio" name="option" class="hidden" />
+            <span class="ml-2 text-gray-700 font-medium">Pretty in Pink</span>
+          </label>
+          <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition hover:border-blue-400">
+            <input type="radio" name="option" class="hidden" />
+            <span class="ml-2 text-gray-700 font-medium">Three Men and a Baby</span>
+          </label>
+          <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition hover:border-blue-400">
+            <input type="radio" name="option" class="hidden" />
+            <span class="ml-2 text-gray-700 font-medium">Dirty Dancing</span>
+          </label>
+          <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition hover:border-blue-400">
+            <input type="radio" name="option" class="hidden" />
+            <span class="ml-2 text-gray-700 font-medium">Ferris Bueller's Day Off</span>
+          </label>
+        </div>
+
       </div>
 
-      <div class="flex justify-between">
+      <div class="flex justify-between mt-6">
         <button id="back-btn" class="flex items-center gap-2 bg-gray-200 text-gray-800 px-4 py-2 rounded-full hover:bg-gray-300 transition">
           <i class="fas fa-arrow-left"></i> Back
         </button>
-        <button id="next-btn" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition" disabled>
+        <button id="next-btn" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition" disabled>
           Next <i class="fas fa-arrow-right"></i>
         </button>
       </div>
     </div>
   </main>
 
-  <script type="module" src="quiz.js"></script>
-  <script type="module" src="dummy-quiz.js"></script>
+  <script>
+    // JavaScript to handle selection effect
+    const options = document.querySelectorAll('label');
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        options.forEach(opt => opt.classList.remove('border-blue-500', 'bg-blue-50'));
+        option.classList.add('border-blue-500', 'bg-blue-50');
+      });
+    });
+  </script>
+
 </body>
 
 </html>
