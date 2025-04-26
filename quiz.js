@@ -170,11 +170,18 @@ function showResult() {
   saveProgress(); // ✅ Save at finish too
 
   container.innerHTML = `
-    <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
-    <p class="mt-4 text-lg">Your Score: <strong>${score}</strong> / ${questions.length}</p>
-    <a href="result.html" class="mt-4 inline-block bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">📜 View All Results</a><br>
-    <a href="index.html" class="mt-2 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">🔙 Back to Home</a>
-  `;
+  <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
+  <p class="mt-4 text-lg">Your Score: <strong>${score}</strong> / ${questions.length}</p>
+
+  <a href="result.html" class="mt-6 inline-flex items-center gap-2 bg-purple-500 text-white px-6 py-3 rounded-full hover:bg-purple-600 text-lg font-semibold shadow-lg transition">
+    <i class="fas fa-list"></i> View All Results
+  </a><br>
+
+  <a href="index.html" class="mt-4 inline-flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 text-lg font-semibold shadow-lg transition">
+    <i class="fas fa-home"></i> Back to Home
+  </a>
+`;
+
 
   document.getElementById('next-btn').style.display = 'none';
   document.getElementById('back-btn').style.display = 'none';
