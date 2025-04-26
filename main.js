@@ -187,5 +187,31 @@ if (startBtn) {
   });
 }
 
+
+
+
+// cards dunctionality
+
+
+const cards = Array.from(cardContainer.children);
+
+cards.forEach(card => {
+  card.addEventListener("click", () => {
+    const h4 = card.querySelector("h4");
+    const subject = h4 ? h4.textContent: "";
+    if (subject) {
+      window.location.href = `quiz.html?subject=${subject}`;
+    }
+  });
+});
+
+
+
+
+
+
+
+
+
 });
 
