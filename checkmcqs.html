@@ -7,18 +7,36 @@
   <title>Check MCQs</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* Smooth entrance animation */
+    .fade-in {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hover effect on answers */
+    .option:hover {
+      background-color: #f3f4f6; /* light gray hover */
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100 min-h-screen p-6">
 
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md fade-in">
     <h1 class="text-3xl font-bold text-center text-purple-600 mb-6">🧐 Check Your MCQs</h1>
 
     <div id="questions-container">
       <!-- Questions will be populated here -->
     </div>
 
-    <a href="result.html" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+    <a href="result.html" class="mt-6 inline-block bg-blue-500 text-white px-5 py-2 rounded hover:bg-blue-600 transition duration-300">
       Back to Results
     </a>
   </div>
@@ -33,10 +51,7 @@
         return;
       }
 
-      // LocalStorage se results uthana
       const storedResults = JSON.parse(localStorage.getItem("quizResults")) || [];
-
-      // Sahi wala quizResult find karna
       const quizResult = storedResults.find(result => String(result.quizId) === String(quizId));
 
       if (!quizResult) {
@@ -50,23 +65,20 @@
       questions.forEach((question, index) => {
         const correctAnswer = question.correct_answer || question.correct;
         const userSelected = question.userSelected;
-
         const allAnswers = [...question.incorrect_answers, correctAnswer];
 
-        // (optional) agar shuffle chahte ho to isay randomize kar sakte ho, warna rehne do.
-
         const questionElement = document.createElement('div');
-        questionElement.className = 'mb-6';
+        questionElement.className = 'mb-8 fade-in';
 
         questionElement.innerHTML = `
-          <h2 class="text-xl font-semibold mb-2">Q${index + 1}: ${question.question}</h2>
+          <h2 class="text-xl font-semibold mb-4">Q${index + 1}: ${question.question}</h2>
           <div class="space-y-2">
             ${allAnswers.map(ans => {
               const isCorrect = ans === correctAnswer;
               const isUserSelected = ans === userSelected;
 
               let icon = '';
-              let colorClass = 'text-gray-700'; // Default color
+              let colorClass = 'text-gray-700'; // Default
 
               if (isUserSelected && isCorrect) {
                 icon = '<i class="fas fa-check-circle text-green-500 mr-2"></i>';
@@ -80,7 +92,7 @@
               }
 
               return `
-                <div class="flex items-center ${colorClass}">
+                <div class="flex items-center option px-4 py-2 ${colorClass}">
                   ${icon} ${ans}
                 </div>
               `;
