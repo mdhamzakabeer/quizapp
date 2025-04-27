@@ -208,7 +208,33 @@ if (startBtn) {
 
   });
 }
+// 👇 Yahan add karo subscribe wala code
+const subscribeButton = document.querySelector("button.bg-gray-800");
+const emailInput = document.querySelector("input[type='email']");
 
+if (subscribeButton && emailInput) {
+  subscribeButton.addEventListener("click", function () {
+    const userEmail = emailInput.value.trim();
+
+    if (!userEmail) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    emailjs.send("service_sbt7ist", "template_xxxxxx", {
+      to_email: "hamzakabeer897@gmail.com",
+      from_email: userEmail,
+    })
+    .then(function(response) {
+       console.log('SUCCESS!', response.status, response.text);
+       alert("Thanks for subscribing! Please check your email to confirm.");
+       emailInput.value = ""; // Clear input
+    }, function(error) {
+       console.log('FAILED...', error);
+       alert("Failed to send email. Please try again later.");
+    });
+  });
+}
 });
 
 
