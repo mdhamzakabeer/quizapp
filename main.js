@@ -208,26 +208,56 @@ if (startBtn) {
 
   });
 }
-document.addEventListener("DOMContentLoaded", function() {
-  const subscribeBtn = document.getElementById("subscribe-btn");
+
+document.addEventListener("DOMContentLoaded", () => {
   const emailInput = document.getElementById("subscriber-email");
-  const confirmationMessage = document.getElementById("confirmation-message");
+  const subscribeBtn = document.getElementById("subscribe-btn");
 
-  if (subscribeBtn && emailInput && confirmationMessage) {
-    subscribeBtn.addEventListener("click", function() {
-      const email = emailInput.value.trim();
+  // Create a confirmation message element
+  const confirmationMessage = document.createElement("p");
+  confirmationMessage.className = "text-green-600 font-bold mt-6 hidden";
+  confirmationMessage.id = "confirmation-message";
 
-      if (!email) {
+  // Append confirmation message to the section
+  const section = subscribeBtn.closest("section");
+  if (section) {
+    section.appendChild(confirmationMessage);
+  }
+
+  if (subscribeBtn && emailInput) {
+    subscribeBtn.addEventListener("click", () => {
+      const userEmail = emailInput.value.trim();
+
+      if (!userEmail || !validateEmail(userEmail)) {
         alert("Please enter a valid email address.");
         return;
       }
 
-      confirmationMessage.textContent = `Thanks for subscribing! Updates will be sent to ${email}`;
-      confirmationMessage.classList.remove("hidden");
-      emailInput.value = ""; // Clear the input
+      emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+        to_email: userEmail,
+      })
+      .then((response) => {
+        console.log('SUCCESS!', response.status, response.text);
+        confirmationMessage.textContent = "Thanks for subscribing! Please check your email.";
+        confirmationMessage.classList.remove("hidden");
+        emailInput.value = "";
+
+        setTimeout(() => {
+          confirmationMessage.classList.add("hidden");
+        }, 5000);
+      }, (error) => {
+        console.log('FAILED...', error);
+        alert("Subscription failed. Please try again later.");
+      });
     });
   }
 });
+
+// Simple email validation
+function validateEmail(email) {
+  const re = /\S+@\S+\.\S+/;
+  return re.test(email);
+}
 
 });
 
