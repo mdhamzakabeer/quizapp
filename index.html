@@ -20,7 +20,9 @@
   <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  
+  <!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <!-- Include EmailJS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
@@ -220,11 +222,7 @@
         <input id="subscriber-email" type="email" placeholder="Enter your email" class="p-4 rounded-full w-full md:w-1/3 text-gray-700 focus:outline-none shadow-md border border-gray-300" />
         <button id="subscribe-btn" class="bg-gray-800 text-white font-bold px-8 py-4 rounded-full hover:bg-gray-700 transition shadow-md">Subscribe</button>
       </div>
-    
-      <div id="confirmation-message" class="mt-4 text-green-600 font-bold"></div>
     </section>
-    
-
     <footer class="bg-gray-900 text-white py-10">
       <div class="container mx-auto px-6">
         <div class="grid md:grid-cols-4 gap-8 text-center md:text-left">
@@ -281,25 +279,70 @@
     </footer>
  
     <script>
+      // Email Validation Function
+      function isValidEmail(email) {
+          const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return pattern.test(email);
+      }
+      
       document.getElementById('subscribe-btn').addEventListener('click', function() {
-        var email = document.getElementById('subscriber-email').value;
-        
-        if (email) {
-          emailjs.send('service_sbt7ist', 'template_pedrgbj', {
-            user_email: email // Template variable ke naam ka dhyan rakhna
+          const emailInput = document.getElementById('subscriber-email');
+          const email = emailInput.value.trim();
+      
+          if (!isValidEmail(email)) {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Invalid Email',
+                  text: 'Please enter a valid email address!',
+              });
+              return; // Stop if invalid email
+          }
+      
+          // EmailJS Data
+          const data = {
+              service_id: 'your_service_id_here',
+              template_id: 'template_psetoe2', // Confirmation template ID
+              user_id: 'your_user_id_here',
+              template_params: {
+                  'email': email,
+                  'name': 'Subscriber',
+                  'title': 'Subscription Confirmation',
+                  'message': 'Thank you for subscribing to GrowQuiz!'
+              }
+          };
+      
+          // Call EmailJS API
+          fetch('https://api.emailjs.com/api/v1.0/email/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
           })
-          .then(function(response) {
-            console.log('SUCCESS!', response.status, response.text);
-            document.getElementById('confirmation-message').innerText = 'Thank you for subscribing!';
-          }, function(error) {
-            console.log('FAILED...', error);
-            document.getElementById('confirmation-message').innerText = 'Something went wrong. Please try again.';
+          .then((response) => {
+              if (response.ok) {
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'Subscribed!',
+                      text: 'Please check your email for confirmation.',
+                  });
+                  emailInput.value = ''; // Clear input
+              } else {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Failed!',
+                      text: 'Something went wrong. Please try again later.',
+                  });
+              }
+          })
+          .catch((error) => {
+              console.error('Error:', error);
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Could not send confirmation email.',
+              });
           });
-        } else {
-          alert('Please enter a valid email address.');
-        }
       });
-    </script>
+      </script>
 
   <!-- Apna animation file -->
   <script src="animation.js"></script>
