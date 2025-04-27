@@ -1,14 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
   const userData = JSON.parse(localStorage.getItem('user'));
 
+ setTimeout(()=>{
   if (userData && userData.login) {
     console.log("User is logged in:", userData);
     // User is logged in, continue
   } else {
     console.log("User not logged in. Redirecting to login page...");
-    window.location.href = 'login.html'; // Apni login page ka path do
+    window.location.href = 'login/quiz-form-login.html'; // Apni login page ka path do
   }
 
+ },5000)
   // Redirect if not logged in
   
 
