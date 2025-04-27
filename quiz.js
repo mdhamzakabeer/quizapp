@@ -82,27 +82,26 @@ function loadQuestionsFromLocalQuizzes(quizId) {
     window.location.href = "index.html";
   }
 }
-
-// Show question
+// Show questions
 function showQuestion() {
   const questionData = questions[currentIndex];
   const container = document.getElementById('question-container');
 
   const correct = questionData.correct || questionData.correct_answer;
-  const options = questionData.options || [...questionData.incorrect_answers];
+  const optionsArray = questionData.options || [...questionData.incorrect_answers];
 
   const allAnswers = shuffle([
-    ...options.filter(opt => opt.toLowerCase() !== correct.toLowerCase()),
+    ...optionsArray.filter(opt => opt.toLowerCase() !== correct.toLowerCase()),
     correct
   ]);
 
   container.innerHTML = `
     <h2 class="text-xl font-semibold mb-4">Q${currentIndex + 1}: ${decodeHtml(questionData.question)}</h2>
-    <form id="options-form" class="space-y-3">
+    <form id="options-form" class="grid gap-4">
       ${allAnswers.map(ans => `
-        <label class="block cursor-pointer">
-          <input type="radio" name="answer" value="${ans}" class="mr-2">
-          ${decodeHtml(ans)}
+        <label class="flex items-center p-4 border-2 rounded-xl cursor-pointer transition hover:border-blue-400">
+          <input type="radio" name="answer" value="${ans}" class="hidden">
+          <span class="ml-2 font-medium text-gray-700">${decodeHtml(ans)}</span>
         </label>
       `).join('')}
     </form>
@@ -110,13 +109,26 @@ function showQuestion() {
 
   document.getElementById('next-btn').disabled = true;
 
-  const form = document.getElementById('options-form');
-  form.addEventListener('change', () => {
-    document.getElementById('next-btn').disabled = false;
+  let optionLabels = document.querySelectorAll('#options-form label'); // 👈 ab naam alag
+  const nextBtn = document.getElementById('next-btn');
+
+  optionLabels.forEach(option => {
+    option.addEventListener('click', () => {
+      optionLabels.forEach(opt => {
+        opt.classList.remove('border-blue-500', 'bg-blue-50');
+        opt.querySelector('input').checked = false;
+      });
+
+      const input = option.querySelector('input');
+      input.checked = true;
+      option.classList.add('border-blue-500', 'bg-blue-50');
+      nextBtn.disabled = false;
+    });
   });
 
   document.getElementById('back-btn').style.display = currentIndex === 0 ? 'none' : 'inline-block';
 }
+
 
 // Next button
 document.getElementById('next-btn').addEventListener('click', () => {
@@ -158,11 +170,18 @@ function showResult() {
   saveProgress(); // ✅ Save at finish too
 
   container.innerHTML = `
-    <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
-    <p class="mt-4 text-lg">Your Score: <strong>${score}</strong> / ${questions.length}</p>
-    <a href="result.html" class="mt-4 inline-block bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">📜 View All Results</a><br>
-    <a href="index.html" class="mt-2 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">🔙 Back to Home</a>
-  `;
+  <h2 class="text-2xl font-bold text-green-600">Quiz Completed!</h2>
+  <p class="mt-4 text-lg">Your Score: <strong>${score}</strong> / ${questions.length}</p>
+
+  <a href="result.html" class="mt-6 inline-flex items-center gap-2 bg-purple-500 text-white px-6 py-3 rounded-full hover:bg-purple-600 text-lg font-semibold shadow-lg transition">
+    <i class="fas fa-list"></i> View All Results
+  </a><br>
+
+  <a href="index.html" class="mt-4 inline-flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 text-lg font-semibold shadow-lg transition">
+    <i class="fas fa-home"></i> Back to Home
+  </a>
+`;
+
 
   document.getElementById('next-btn').style.display = 'none';
   document.getElementById('back-btn').style.display = 'none';

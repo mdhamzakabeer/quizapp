@@ -1,8 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-
-
-setTimeout(()=>{
   const isLoggedIn = JSON.parse(localStorage.getItem("isLogin"));
 
   // Redirect if not logged in
@@ -10,8 +6,6 @@ setTimeout(()=>{
     window.location.href = "login/signUp/quiz-form-login.html";
     return;
   }
-
-},10000)
 
 
   // cards creation
@@ -25,6 +19,7 @@ setTimeout(()=>{
   }
   
   const createCardsByFetchingDataOfApi = (quizData) => {
+  
     if (!cardContainer) {
       console.error("Card container not found in HTML.");
       return;
@@ -37,7 +32,7 @@ setTimeout(()=>{
     if (quizData && Array.isArray(quizData.trivia_categories)) {
       quizData.trivia_categories.forEach((category) => {
         const card = document.createElement("div");
-        card.className = "bg-white p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer card"; // ✅ important "card" class
+        card.className = "bg-white p-6 rounded-xl shadow hover:shadow-lg transition cursor-pointer";
   
         const h4 = document.createElement("h4");
         h4.className = "text-lg font-semibold mb-2 text-blue-600";
@@ -62,30 +57,31 @@ setTimeout(()=>{
   
     // ✅ LOCAL STORAGE CARDS
     const stored = JSON.parse(localStorage.getItem("quizzes")) || [];
-  
+
     stored.forEach((quiz) => {
       const card = document.createElement("div");
-      card.className = "bg-white shadow-md rounded-lg p-4 border cursor-pointer hover:shadow-lg transition card"; // ✅ important "card" class
+      card.className = "bg-white shadow-md rounded-lg p-4 border cursor-pointer hover:shadow-lg transition";
       card.dataset.subject = quiz.subject;
-      card.dataset.id = quiz.id;
-      card.id = quiz.id;
-  
+      card.dataset.id = quiz.id; // Optional: store ID as a data attribute
+      card.id = quiz.id; // Use quiz.id directly
+    
       card.innerHTML = `
         <h3 class="text-lg font-bold text-blue-600">${quiz.subject}</h3>
         <p class="text-sm text-gray-500">ID: ${quiz.id}</p>
       `;
-  
+    
       card.addEventListener('click', () => {
         localStorage.setItem('selectedSubject', quiz.subject);
         window.location.href = `quiz.html?id=${quiz.id}`;
       });
-  
+    
       cardContainer.appendChild(card);
     });
+      
   
     // ✅ CREATE NEW CARD
     const createCard = document.createElement("div");
-    createCard.className = "bg-gray-100 p-6 rounded-xl shadow border-dashed border-2 border-blue-400 hover:bg-blue-50 transition flex items-center justify-center cursor-pointer card"; // ✅ important "card" class
+    createCard.className = "bg-gray-100 p-6 rounded-xl shadow border-dashed border-2 border-blue-400 hover:bg-blue-50 transition flex items-center justify-center cursor-pointer";
     createCard.innerHTML = `
       <div class="text-center">
         <div class="text-4xl text-blue-600 font-bold mb-2">+</div>
@@ -95,12 +91,10 @@ setTimeout(()=>{
   
     createCard.addEventListener("click", () => {
       window.location.href = `create-quiz.html`;
+
     });
   
     cardContainer.appendChild(createCard);
-  
-    // ✅ Animate cards after ALL cards are created
-    animateCards();
   };
   
  // Show/hide nav items
@@ -215,84 +209,85 @@ if (startBtn) {
   });
 }
 
-});
-gsap.to("#headline", {
-  duration: 2,
-  text: "Welcome to GrowQuiz!",
-  ease: "none",
-  repeat:-1,
-  repeatDelay:1,
-});
- gsap.from("#welcomeSection", {
-      x: -200,    // Start 200px to the left
-      opacity: 0, // Invisible initially
-      duration: 1,
-      ease: "power2.out",
-      onComplete: () => {
-        // Typing animation after slide-in finishes
-        gsap.to("#headline", {
-          duration: 2,
-          text: "Welcome to GrowQuiz!",
-          ease: "none"
-        });
-      }
-    });
-    function animateCards() {
-      gsap.registerPlugin(ScrollTrigger);
-    
-      // Kill all old ScrollTriggers
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    
-      // Target ALL .card divs inside #card-container
-      gsap.utils.toArray("#card-container .card").forEach((card) => {
-        gsap.from(card, {
-          scrollTrigger: {
-            trigger: card,
-            start: "top 90%",   // Jab card viewport mein aaye
-            end: "top 60%",     // Jab thoda aur andar aaye
-            scrub: true,        // Smooth scroll-based animation
-            // markers: true,   // (Optional) Debug markers dikhane ke liye
-          },
-          opacity: 0,
-          y: 50,
-          x: 100,               // ✅ chhota "x", not "X"
-          duration: 1,
-          ease: "power2.out",
+
+
+const subscribeBtn = document.getElementById('subscribe-btn');
+      const btnText = document.getElementById('btn-text');
+      const btnLoader = document.getElementById('btn-loader');
+      
+      subscribeBtn.addEventListener('click', function() {
+        var email = document.getElementById('subscriber-email').value.trim();
+      
+        // Simple Email Validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (!emailRegex.test(email)) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Invalid Email',
+            text: 'Please enter a valid email address!',
+            confirmButtonColor: '#f1c40f'
+          });
+          return;
+        }
+      
+        // Check if Already Subscribed
+        if (localStorage.getItem('subscribed') === 'true') {
+          Swal.fire({
+            icon: 'info',
+            title: 'Already Subscribed',
+            text: 'You have already subscribed!',
+            confirmButtonColor: '#3085d6'
+          });
+          return;
+        }
+      
+        // Show Loader
+        btnText.classList.add('hidden');
+        btnLoader.classList.remove('hidden');
+      
+        // Decide Template ID
+        let templateID = '';
+        if (email.endsWith('@gmail.com')) {
+          templateID = 'template_eeaxq4v'; // Gmail users
+        } else {
+          templateID = 'template_psetoe2'; // Other users
+        }
+      
+        emailjs.send('service_sbt7ist', templateID, {
+          user_email: email
+        })
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+      
+          // Save Subscription in LocalStorage
+          localStorage.setItem('subscribed', 'true');
+      
+          Swal.fire({
+            icon: 'success',
+            title: 'Subscribed!',
+            text: 'Thank you for subscribing to GrowQuiz!',
+            confirmButtonColor: '#3085d6',
+            timer: 2500
+          });
+          document.getElementById('subscriber-email').value = '';
+        }, function(error) {
+          console.log('FAILED...', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong. Please try again later!',
+            confirmButtonColor: '#d33'
+          });
+        })
+        .finally(function() {
+          // Hide Loader
+          btnText.classList.remove('hidden');
+          btnLoader.classList.add('hidden');
         });
       });
-    }
-    
-    
-    gsap.from("header", {
-      y: -100,
-      opacity: 0,
-    
-      duration: 1.5,
-      delay:4.7,
-      ease: "bounce.out"
-    });
-    
-    
 
-    // Simple Loader Animation with GSAP
-gsap.to("#loader h1", {
-  text: "Welcome to GrowQuiz!",
-  duration: 2,
-  repeat: -1,
-  yoyo: true,
-  ease: "power2.inOut"
+
 });
 
-// Hide Loader after 3 seconds
-setTimeout(() => {
-  gsap.to("#loader", {
-    opacity: 0,
-    duration: 1,
-    onComplete: () => {
-      document.getElementById("loader").style.display = "none";
-    }
-  });
-}, 3000);
 
-  
-    // Animate already existing cards

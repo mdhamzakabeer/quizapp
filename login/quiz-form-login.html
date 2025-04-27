@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - GrowQuiz</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+
+</head>
+
+<body class="bg-white min-h-screen flex items-center justify-center">
+
+  <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl" id="pora-container">
+    
+    <h1 id="growQuiz" class="text-4xl font-bold text-indigo-700 text-center mb-3">Grow Quiz</h1>
+    <h2 id="welcome" class="text-2xl text-gray-700 text-center mb-2">Welcome</h2>
+    <p id="subtext" class="text-center text-gray-500 mb-6">Let's start your journey!</p>
+
+    <form id="loginForm" class="flex flex-col gap-5">
+      <input id="name" type="text" placeholder="Name" required
+        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+      <input id="email" type="email" placeholder="Email" required
+        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+      <input id="password" type="password" placeholder="Password" required
+        class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+      
+      <button type="submit"
+        class="mt-4 bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition duration-300 text-lg">
+        Submit
+      </button>
+    </form>
+
+  </div>
+
+  <div id="otpBox" class="hidden w-full max-w-md p-8 bg-white rounded-2xl shadow-xl mt-10">
+    <h2 class="text-3xl font-bold text-indigo-700 text-center mb-5">Enter OTP</h2>
+    <input id="otpInput" type="text" placeholder="Enter OTP"
+      class="w-full px-5 py-3 border border-gray-300 rounded-lg mb-5 focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+    <button id="verifyOtpBtn"
+      class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition duration-300 text-lg">
+      Verify OTP
+    </button>
+  </div>
+
+
+  <script src="formauth.js"></script>
+</body>
+
+
+</html>
