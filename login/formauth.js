@@ -46,22 +46,13 @@ form.addEventListener('submit', function(e) {
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value.trim();
 
-  // Validation using Regex
+  // Validation
   const nameRegex = /^[a-zA-Z\s]{3,30}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (!nameRegex.test(name)) {
+  if (!nameRegex.test(name) || !emailRegex.test(email)) {
     Toastify({
-      text: "Please enter a valid Name (only letters, 3-30 characters).",
-      backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
-      duration: 3000
-    }).showToast();
-    return;
-  }
-
-  if (!emailRegex.test(email)) {
-    Toastify({
-      text: "Please enter a valid Email address.",
+      text: "Please enter valid Name and Email.",
       backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
       duration: 3000
     }).showToast();
@@ -70,22 +61,31 @@ form.addEventListener('submit', function(e) {
 
   const existingUser = JSON.parse(localStorage.getItem('user'));
 
-  if (existingUser && existingUser.name === name && existingUser.email === email && existingUser.login === true) {
-    Swal.fire({
-      icon: 'success',
-      title: 'Welcome back!',
-      text: 'Redirecting to dashboard...',
-      timer: 2000,
-      showConfirmButton: false
-    });
-
-   window.location.href="../index.html"
+  // ⭐ FIRST CHECK: User already registered aur login nahi hua
+  if (existingUser && existingUser.name === name && existingUser.email === email) {
+    if (existingUser.login === true) {
+      // Pehle se login hai
+      Swal.fire({
+        icon: 'success',
+        title: 'Welcome back!',
+        text: 'Redirecting to dashboard...',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      setTimeout(() => {
+        window.location.href = "../index.html";
+      }, 2000);
+      return;
+    } else {
+      // Pehle registered hai but login nahi hua, OTP maangna hoga
+      showOtpBox();
+      return;
+    }
   }
 
-  // New user -> Send OTP
+  // ⭐ NEW USER: OTP bhejna padega
   const otp = Math.floor(100000 + Math.random() * 900000);
 
-  // Save user data temporarily
   localStorage.setItem('user', JSON.stringify({
     name,
     email,
@@ -111,7 +111,6 @@ form.addEventListener('submit', function(e) {
         timer: 3000,
         showConfirmButton: false
       });
-
       showOtpBox();
     }, function(error) {
       console.log('FAILED...', error);
