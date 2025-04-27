@@ -151,7 +151,7 @@ async function dropdownData() {
   try {
     const response = await fetch("https://opentdb.com/api_category.php");
     const data = await response.json();
-    // console.log(data);
+    console.log(data);
 // ✅ Save API categories for later use in quiz.js
 localStorage.setItem("apiCategories", JSON.stringify(data.trivia_categories));
     createCardsByFetchingDataOfApi(data); // render cards for both API + local
