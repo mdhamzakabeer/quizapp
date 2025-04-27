@@ -1,8 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-
-
-
   const isLoggedIn = JSON.parse(localStorage.getItem("isLogin"));
 
   // Redirect if not logged in
