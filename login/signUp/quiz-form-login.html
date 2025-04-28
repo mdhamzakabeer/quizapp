@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Grow Quiz App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4">
+
+  <div class="w-full max-w-sm bg-white rounded-3xl shadow-xl p-8 space-y-6">
+    <div class="text-center">
+      <h2 class="text-3xl font-extrabold text-gray-800">Welcome Back</h2>
+      <p class="text-gray-500 text-sm">Login to your Grow Quiz App</p>
+    </div>
+
+    <form action="#" id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Username</label>
+        <input type="text" name="username" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" required>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" name="userPassword" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" required>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-200">
+        Login
+      </button>
+    </form>
+
+    <div class="text-center text-sm text-gray-600">
+      Don’t have an account?
+      <a href="quiz-form-sign-up.html" class="text-blue-600 hover:underline font-medium">Sign Up</a>
+    </div>
+  </div>
+
+  <script src="formauth.js"></script>
+</body>
+</html>
