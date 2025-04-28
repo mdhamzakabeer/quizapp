@@ -1,4 +1,5 @@
 // GSAP + TextPlugin + ScrollTrigger register
+// GSAP + TextPlugin + ScrollTrigger register
 gsap.registerPlugin(TextPlugin, ScrollTrigger);
 
 // Headline text animation (Typing effect loop)

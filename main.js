@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const userData = JSON.parse(localStorage.getItem('user'));
 
+  const userData=JSON.parse(localStorage.getItem("user"))
  setTimeout(()=>{
   if (userData && userData.login) {
     console.log("User is logged in:", userData);
@@ -11,8 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
  },5000)
-  // Redirect if not logged in
-  
+
+
+
 
   // cards creation
 
