@@ -27,18 +27,7 @@
   <!-- FontAwesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <!-- SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- Include EmailJS SDK and SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-  (function(){
-    emailjs.init("mAPeOxuQvhAVMfKAg"); // Tumhara public key
-  })();
-</script>
 
   <!-- Tailwind Config -->
   <script>
@@ -222,24 +211,24 @@
         </div>
       </div>
     </section>
-    <section class="bg-gray-100 text-gray-800 py-16 px-6 text-center">
-      <h3 class="text-4xl font-bold mb-4">Stay Updated!</h3>
-      <p class="text-lg mb-8 text-gray-600">Join our mailing list for the latest quiz updates and learning tips.</p>
-    
-      <div class="flex flex-col md:flex-row justify-center items-center gap-4">
-        <input id="subscriber-email" type="email" placeholder="Enter your email" class="p-4 rounded-full w-full md:w-1/3 text-gray-700 focus:outline-none shadow-md border border-gray-300" />
-        <button id="subscribe-btn" class="bg-gray-800 text-white font-bold px-8 py-4 rounded-full hover:bg-gray-700 transition shadow-md relative">
-          <span id="btn-text">Subscribe</span>
-          <span id="btn-loader" class="hidden absolute right-4 top-1/2 transform -translate-y-1/2">
-            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-          </span>
-        </button>
-      </div>
-    </section>
+<!-- Email Subscribe Section -->
+<section class="bg-gray-100 text-gray-800 py-16 px-6 text-center">
+  <h3 class="text-4xl font-bold mb-4">Stay Updated!</h3>
+  <p class="text-lg mb-8 text-gray-600">Join our mailing list for the latest quiz updates and learning tips.</p>
 
+  <div class="flex flex-col md:flex-row justify-center items-center gap-4">
+    <input id="subscriber-email" type="email" placeholder="Enter your email" class="p-4 rounded-full w-full md:w-1/3 text-gray-700 focus:outline-none shadow-md border border-gray-300" />
+    <button id="subscribe-btn" class="bg-gray-800 text-white font-bold px-8 py-4 rounded-full hover:bg-gray-700 transition shadow-md relative">
+      <span id="btn-text">Subscribe</span>
+      <span id="btn-loader" class="hidden absolute right-4 top-1/2 transform -translate-y-1/2">
+        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+      </span>
+    </button>
+  </div>
+</section>
 
     <footer class="bg-gray-900 text-white py-10">
       <div class="container mx-auto px-6">
@@ -296,7 +285,11 @@
       </div>
     </footer>
  
- 
+   <!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- EmailJS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
 
   <!-- Apna animation file -->
   <script src="animation.js"></script>
