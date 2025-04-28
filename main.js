@@ -1,11 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const isLoggedIn = JSON.parse(localStorage.getItem("isLogin"));
+  
 
-  // Redirect if not logged in
-  if (!isLoggedIn) {
-    window.location.href = "login/signUp/quiz-form-login.html";
-    return;
-  }
+  const userData=JSON.parse(localStorage.getItem("user"))
+  setTimeout(()=>{
+   if (userData && userData.login) {
+     console.log("User is logged in:", userData);
+     // User is logged in, continue
+   } else {
+     console.log("User not logged in. Redirecting to login page...");
+     window.location.href = 'login/quiz-form-login.html'; // Apni login page ka path do
+   }
+ 
+  },5000)
+ 
+ 
+
+
 
 
   // cards creation
@@ -249,8 +259,8 @@ const subscribeBtn = document.getElementById('subscribe-btn');
         // Decide Template ID
         let templateID = '';
         if (email.endsWith('@gmail.com')) {
-          templateID = 'template_eeaxq4v'; // Gmail users
         } else {
+          templateID = 'template_eeaxq4v'; // Gmail users
           templateID = 'template_psetoe2'; // Other users
         }
       
