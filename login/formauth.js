@@ -1,176 +1,97 @@
-
-
-(function() {
-  emailjs.init("Qzb9CnxmhL4YUVNvr"); // <-- Apni EmailJS PUBLIC key lagani hai
-})();
-
-// Animate on load 🚀
-gsap.to("#loginBox", {
-  opacity: 1,
-  scale: 1,
-  duration: 1,
-  ease: "power3.out"
-});
-
-gsap.from("#growQuiz", {
-  y: -30,
-  opacity: 0,
-  delay: 0.2,
-  duration: 0.8,
-  ease: "back.out(1.7)"
-});
-
-gsap.from("#welcome", {
-  x: -50,
-  opacity: 0,
-  delay: 0.4,
-  duration: 0.8
-});
-
-gsap.from("#subtext", {
-  x: 50,
-  opacity: 0,
-  delay: 0.6,
-  duration: 0.8
-});
-
-// Form Submit 🧠
-const form = document.getElementById('loginForm');
-const poraCont = document.getElementById("pora-container");
-const verifyOtpBtn = document.getElementById('verifyOtpBtn');
-
-form.addEventListener('submit', function(e) {
-  e.preventDefault();
-
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  // Validation
-  const nameRegex = /^[a-zA-Z\s]{3,30}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!nameRegex.test(name) || !emailRegex.test(email)) {
+document.addEventListener("DOMContentLoaded", () => {
+  const showToast = (message, color = "#4ade80") => {
     Toastify({
-      text: "Please enter valid Name and Email.",
-      backgroundColor: "linear-gradient(to right, #ff416c, #ff4b2b)",
-      duration: 3000
+      text: message,
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: color,
+      close: true
     }).showToast();
-    return;
-  }
-
-  const existingUser = JSON.parse(localStorage.getItem('user'));
-
-  // ⭐ FIRST CHECK: User already registered aur login nahi hua
-  if (existingUser && existingUser.name === name && existingUser.email === email) {
-    if (existingUser.login === true) {
-      // Pehle se login hai
-      Swal.fire({
-        icon: 'success',
-        title: 'Welcome back!',
-        text: 'Redirecting to dashboard...',
-        timer: 2000,
-        showConfirmButton: false
-      });
-      setTimeout(() => {
-        window.location.href = "../index.html";
-      }, 2000);
-      return;
-    } else {
-      // Pehle registered hai but login nahi hua, OTP maangna hoga
-      showOtpBox();
-      return;
-    }
-  }
-
-  // ⭐ NEW USER: OTP bhejna padega
-  const otp = Math.floor(100000 + Math.random() * 900000);
-
-  localStorage.setItem('user', JSON.stringify({
-    name,
-    email,
-    password,
-    otp,
-    login: false
-  }));
-
-  const templateParams = {
-    sender_name: name,
-    sender_email: email,
-    sender_password: password,
-    otp_code: otp
   };
 
-  emailjs.send('service_cdl1aoy', 'template_8pt0cwm', templateParams)
-    .then(function(response) {
-      console.log('SUCCESS!', response.status, response.text);
-      Swal.fire({
-        icon: 'success',
-        title: 'OTP Sent!',
-        text: 'Check your email inbox.',
-        timer: 3000,
-        showConfirmButton: false
-      });
-      showOtpBox();
-    }, function(error) {
-      console.log('FAILED...', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Failed to send OTP',
-        text: 'Please try again later.'
-      });
+  // Sign-Up Logic
+  if (window.location.pathname.includes("sign-up")) {
+    const form = document.getElementById("signUPForm");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+      const username = formData.get("username").trim();
+      const password = formData.get("password");
+      const confirmPassword = formData.get("confirmPassword");
+
+      if (!username || !password || !confirmPassword) {
+        showToast("Please fill all fields", "#f87171"); // red
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showToast("Passwords do not match.", "#f87171"); // red
+        return;
+      }
+
+      const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
+      const emailRegex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,6}$/;
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{6,}$/;
+
+      if (!usernameRegex.test(username) && !emailRegex.test(username)) {
+        showToast("Username must be 3-15 characters or a valid email.", "#facc15"); // yellow
+        return;
+      }
+
+      if (!passwordRegex.test(password)) {
+        showToast("Password must have 6+ chars, number, capital, and special char.", "#facc15"); // yellow
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem("userDetails")) || [];
+      const userExists = users.some(user => user.username === username);
+
+      if (userExists) {
+        showToast("User is already registered!", "#f97316"); // orange
+        return;
+      }
+
+      users.push({ username, password });
+      localStorage.setItem("userDetails", JSON.stringify(users));
+
+      showToast("Sign up successful!", "#4ade80"); // green
+      form.reset();
     });
-});
+  }
 
-// Show OTP Box
-function showOtpBox() {
-  poraCont.classList.add("hidden");
-  document.getElementById('otpBox').classList.remove('hidden');
+  // Login Logic
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", (event) => {
+      event.preventDefault();
 
-  gsap.from("#otpBox", {
-    opacity: 0,
-    scale: 0.8,
-    duration: 0.8,
-    ease: "power3.out"
-  });
-}
+      const formData = new FormData(loginForm);
+      const username = formData.get("username").trim();
+      const password = formData.get("userPassword").trim();
 
-// OTP Verify 🧩
-verifyOtpBtn.addEventListener('click', function() {
-  try {
-    const enteredOtp = document.getElementById('otpInput').value.trim();
-    const userData = JSON.parse(localStorage.getItem('user'));
+      if (!username || !password) {
+        showToast("Please fill in both username and password.", "#f87171");
+        return;
+      }
 
-    if (userData && enteredOtp && Number(enteredOtp) === Number(userData.otp)) {
-      Swal.fire({
-        icon: 'success',
-        title: 'OTP Verified!',
-        text: 'Redirecting to dashboard...',
-        timer: 2000,
-        showConfirmButton: false
-      });
+      const users = JSON.parse(localStorage.getItem("userDetails")) || [];
+      const match = users.find(user => user.username === username && user.password === password);
 
-      setTimeout(() => {
-        // Update user data
-        delete userData.otp;
-        userData.login = true;
-        localStorage.setItem('user', JSON.stringify(userData));
-
-        window.location.href="../index.html";
-      }, 2000);
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Invalid OTP',
-        text: 'Please try again.'
-      });
-    }
-  } catch (error) {
-    console.error("Error during OTP verification:", error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Something went wrong',
-      text: error.message
+      if (match) {
+        showToast("Login successful!", "#4ade80");
+        localStorage.setItem("isLogin", JSON.stringify(true));
+        setTimeout(() => {
+          window.location.href = "../../index.html";
+        }, 1000);
+      } else {
+        showToast("No matching user found. Please check your credentials.", "#f87171");
+      }
     });
   }
 });
+
+
+

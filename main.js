@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  
+  const isLoggedIn = JSON.parse(localStorage.getItem("isLogin"));
 
   const userData=JSON.parse(localStorage.getItem("user"))
   setTimeout(()=>{
@@ -12,11 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
    }
  
   },5000)
- 
- 
-
-
-
 
   // cards creation
 
@@ -259,8 +254,8 @@ const subscribeBtn = document.getElementById('subscribe-btn');
         // Decide Template ID
         let templateID = '';
         if (email.endsWith('@gmail.com')) {
-        } else {
           templateID = 'template_eeaxq4v'; // Gmail users
+        } else {
           templateID = 'template_psetoe2'; // Other users
         }
       
