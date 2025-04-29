@@ -138,14 +138,14 @@ if (mobileLogoutNav) mobileLogoutNav.style.display = "none";
 if (logoutNav) {
 logoutNav.addEventListener("click", () => {
  localStorage.removeItem("isLogin");
- window.location.href = "login/signUp/quiz-form-login.html";
+ window.location.href = "login/quiz-form-login.html";
 });
 }
 //  NEW: Mobile Logout
 if (mobileLogoutNav) {
 mobileLogoutNav.addEventListener("click", () => {
  localStorage.removeItem("isLogin");
- window.location.href = "login/signUp/quiz-form-login.html";
+ window.location.href = "login/quiz-form-login.html";
 });
 }
 
