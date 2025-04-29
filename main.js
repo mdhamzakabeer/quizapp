@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Logout event
   const logoutHandler = () => {
     localStorage.removeItem("user");
-    window.location.href = "login/signUp/quiz-form-login.html";
+    window.location.href = "login/quiz-form-login.html";
   };
 
   if (logoutNav) logoutNav.addEventListener("click", logoutHandler);
