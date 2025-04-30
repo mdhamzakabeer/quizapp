@@ -12,13 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = 'login/quiz-form-login.html';
     }
   }, 2000);
-
-
-
 // cards creation
-
-
-
 let cardContainer = document.getElementById("card-container");
 if (!cardContainer) {
  console.error("card-container not found!");
@@ -148,11 +142,7 @@ mobileLogoutNav.addEventListener("click", () => {
  window.location.href = "login/quiz-form-login.html";
 });
 }
-
-
-
 // Fetch dropdown quiz categories
-
 let data=null;
 async function dropdownData() {
 try {
@@ -211,15 +201,8 @@ startBtn.addEventListener("click", () => {
  } else {
    window.location.href = `quiz.html?id=${selectedValue}`;
  }
- 
-
 });
 }
-
-
-
-
-
   (function () {
     emailjs.init('mAPeOxuQvhAVMfKAg'); // EmailJS public key
   })();
@@ -331,112 +314,4 @@ startBtn.addEventListener("click", () => {
     const namePart = email.substring(0, email.indexOf('@'));
     return namePart.replace(/[.\-_]/g, ' ').replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
   }
-
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// (function() {
-// emailjs.init('mAPeOxuQvhAVMfKAg'); // Tumhara public key
-// })();
-
-// const subscribeBtn = document.getElementById('subscribe-btn');
-// const emailInput = document.getElementById('subscriber-email');
-// const btnText = document.getElementById('btn-text');
-// const btnLoader = document.getElementById('btn-loader');
-
-// subscribeBtn.addEventListener('click', async function(event) {
-// event.preventDefault();
-
-// const email = emailInput.value.trim();
-
-// if (!validateEmail(email)) {
-//  Swal.fire({
-//    icon: 'error',
-//    title: 'Invalid Email!',
-//    text: 'Please enter a valid email address.'
-//  });
-//  return;
-// }
-
-// if (localStorage.getItem('subscribedEmail') === email) {
-//  Swal.fire({
-//    icon: 'info',
-//    title: 'Already Subscribed!',
-//    text: 'You have already subscribed to GrowQuiz.'
-//  });
-//  return;
-// }
-
-// btnText.classList.add('hidden');
-// btnLoader.classList.remove('hidden');
-
-// const userName = extractNameFromEmail(email);
-
-// const templateParams = {
-//  sender_name: "GrowQuiz Subscription Form",
-//  admin_name: "GrowQuiz Admin",
-//  user_name: userName,
-//  user_email: email,
-//  company_name: "GrowQuiz",
-//  current_date: new Date().toLocaleDateString('en-GB') // Format: DD/MM/YYYY
-// };
-
-// try {
-//  // 1. Send email to Admin
-//  await emailjs.send('service_sbt7ist', 'template_g1wy2b9', templateParams);
-
-//  // 2. Send email to User
-//  await emailjs.send('service_sbt7ist', 'template_sc95a4s', templateParams);
-
-//  localStorage.setItem('subscribedEmail', email);
-
-//  Swal.fire({
-//    icon: 'success',
-//    title: 'Subscribed!',
-//    text: 'Thank you for subscribing to GrowQuiz.'
-//  });
-
-//  emailInput.value = '';
-// } catch (error) {
-//  console.error('Email send failed:', error);
-//  Swal.fire({
-//    icon: 'error',
-//    title: 'Oops!',
-//    text: 'Something went wrong. Please try again later.'
-//  });
-// } finally {
-//  btnText.classList.remove('hidden');
-//  btnLoader.classList.add('hidden');
-// }
-// });
-
-// function validateEmail(email) {
-// const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// return regex.test(email);
-// }
-
-// function extractNameFromEmail(email) {
-// const namePart = email.substring(0, email.indexOf('@'));
-// return namePart.replace(/[.\-_]/g, ' ').replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
-// }
-
-// });
