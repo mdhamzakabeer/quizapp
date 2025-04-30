@@ -219,133 +219,120 @@ startBtn.addEventListener("click", () => {
 
 
 
-(function () {
-  emailjs.init('mAPeOxuQvhAVMfKAg'); // EmailJS public key
-})();
 
-const subscribeBtn = document.getElementById('subscribe-btn');
-const emailInput = document.getElementById('subscriber-email');
-const btnText = document.getElementById('btn-text');
-const btnLoader = document.getElementById('btn-loader');
+  (function () {
+    emailjs.init('mAPeOxuQvhAVMfKAg'); // EmailJS public key
+  })();
 
-subscribeBtn.addEventListener('click', async function (event) {
-  event.preventDefault();
-  const email = emailInput.value.trim().toLowerCase();
+  const subscribeBtn = document.getElementById('subscribe-btn');
+  const emailInput = document.getElementById('subscriber-email');
+  const btnText = document.getElementById('btn-text');
+  const btnLoader = document.getElementById('btn-loader');
 
-  // Already subscribed check
-  if (localStorage.getItem('isSubscribed') === 'true') {
-    Swal.fire({
-      icon: 'info',
-      title: 'Already Subscribed!',
-      text: 'You have already subscribed from this device.'
-    });
-    return;
-  }
+  subscribeBtn.addEventListener('click', async function (event) {
+    event.preventDefault();
+    const email = emailInput.value.trim().toLowerCase();
 
-  // Strict email format check
-  if (!validateStrictEmail(email)) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Invalid Email!',
-      text: 'Please enter a valid email address like name@example.com.'
-    });
-    return;
-  }
-
-  // Mailboxlayer API verification
-  const accessKey = '06d82f3c06aad83e7c254d78beaf910f';
-  const verifyUrl = `https://apilayer.net/api/check?access_key=${accessKey}&email=${encodeURIComponent(email)}&smtp=1&format=1`;
-
-  try {
-    const response = await fetch(verifyUrl);
-    const result = await response.json();
-
-    const trustedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
-    const domain = email.split('@')[1];
-    const isTrustedDomain = trustedDomains.includes(domain);
-    
-    const isFake = result.disposable || result.mx_found === false || result.did_you_mean;
-    
-    const isHighRisk =
-      (!isTrustedDomain && (!result.smtp_check || result.score < 0.65)) ||
-      (isTrustedDomain && result.score < 0.2); // Gmail etc. should be very low to block
-    
-    if (isFake || isHighRisk) {
+    // Already subscribed check
+    if (localStorage.getItem('isSubscribed') === 'true') {
       Swal.fire({
-        icon: 'error',
-        title: 'Invalid or Fake Email!',
-        text: 'Please enter a real, working email address.'
+        icon: 'info',
+        title: 'Already Subscribed!',
+        text: 'You have already subscribed from this device.'
       });
       return;
-    }    
-  } catch (e) {
-    console.error('Mailboxlayer error:', e);
-    Swal.fire({
-      icon: 'error',
-      title: 'Verification Failed',
-      text: 'Could not verify email. Please try again later.'
-    });
-    return;
+    }
+
+    // Strict email format check
+    if (!validateStrictEmail(email)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Email!',
+        text: 'Please enter a valid email address like name@example.com.'
+      });
+      return;
+    }
+
+    // Mailboxlayer API verification (only smtp_check)
+    const accessKey = '06d82f3c06aad83e7c254d78beaf910f';
+    const verifyUrl = `https://apilayer.net/api/check?access_key=${accessKey}&email=${encodeURIComponent(email)}&smtp=1&format=1`;
+
+    try {
+      const response = await fetch(verifyUrl);
+      const result = await response.json();
+
+      if (!result.smtp_check) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid or Nonexistent Email!',
+          text: 'Please enter a real, working email address.'
+        });
+        return;
+      }
+    } catch (e) {
+      console.error('Mailboxlayer error:', e);
+      Swal.fire({
+        icon: 'error',
+        title: 'Verification Failed',
+        text: 'Could not verify email. Please try again later.'
+      });
+      return;
+    }
+
+    // All clear → Send to EmailJS
+    btnText.classList.add('hidden');
+    btnLoader.classList.remove('hidden');
+
+    const userName = extractNameFromEmail(email);
+    const templateParams = {
+      sender_name: "GrowQuiz Subscription Form",
+      admin_name: "GrowQuiz Admin",
+      user_name: userName,
+      user_email: email,
+      company_name: "GrowQuiz",
+      current_date: new Date().toLocaleDateString('en-GB')
+    };
+
+    try {
+      await emailjs.send('service_sbt7ist', 'template_g1wy2b9', templateParams); // Admin email
+      await emailjs.send('service_sbt7ist', 'template_sc95a4s', templateParams); // User confirmation email
+
+      localStorage.setItem('isSubscribed', 'true');
+      localStorage.setItem('subscribedEmail', email);
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Subscribed!',
+        text: 'Thank you for subscribing to GrowQuiz.'
+      });
+
+      emailInput.value = '';
+    } catch (error) {
+      console.error('Email send failed:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops!',
+        text: 'Something went wrong. Please try again later.'
+      });
+    } finally {
+      btnText.classList.remove('hidden');
+      btnLoader.classList.add('hidden');
+    }
+  });
+
+  // Strict regex pattern
+  function validateStrictEmail(email) {
+    const strictRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return strictRegex.test(email);
   }
 
-  // All clear → send to EmailJS
-  btnText.classList.add('hidden');
-  btnLoader.classList.remove('hidden');
-
-  const userName = extractNameFromEmail(email);
-  const templateParams = {
-    sender_name: "GrowQuiz Subscription Form",
-    admin_name: "GrowQuiz Admin",
-    user_name: userName,
-    user_email: email,
-    company_name: "GrowQuiz",
-    current_date: new Date().toLocaleDateString('en-GB')
-  };
-
-  try {
-    await emailjs.send('service_sbt7ist', 'template_g1wy2b9', templateParams); // Admin
-    await emailjs.send('service_sbt7ist', 'template_sc95a4s', templateParams); // User
-
-    localStorage.setItem('isSubscribed', 'true');
-    localStorage.setItem('subscribedEmail', email);
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Subscribed!',
-      text: 'Thank you for subscribing to GrowQuiz.'
-    });
-
-    emailInput.value = '';
-  } catch (error) {
-    console.error('Email send failed:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops!',
-      text: 'Something went wrong. Please try again later.'
-    });
-  } finally {
-    btnText.classList.remove('hidden');
-    btnLoader.classList.add('hidden');
+  // Extract user-friendly name from email
+  function extractNameFromEmail(email) {
+    const namePart = email.substring(0, email.indexOf('@'));
+    return namePart.replace(/[.\-_]/g, ' ').replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
   }
-});
-
-// Strict regex pattern
-function validateStrictEmail(email) {
-  const strictRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  return strictRegex.test(email);
-}
-
-// Extract user-friendly name from email
-function extractNameFromEmail(email) {
-  const namePart = email.substring(0, email.indexOf('@'));
-  return namePart.replace(/[.\-_]/g, ' ').replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
-}
 
 });
-
-
-
-
 
 
 
