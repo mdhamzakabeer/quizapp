@@ -216,6 +216,9 @@ startBtn.addEventListener("click", () => {
 });
 }
 
+
+
+
 (function () {
   emailjs.init('mAPeOxuQvhAVMfKAg'); // EmailJS public key
 })();
@@ -229,7 +232,7 @@ subscribeBtn.addEventListener('click', async function (event) {
   event.preventDefault();
   const email = emailInput.value.trim().toLowerCase();
 
-  // Check if already subscribed
+  // Already subscribed check
   if (localStorage.getItem('isSubscribed') === 'true') {
     Swal.fire({
       icon: 'info',
@@ -239,8 +242,8 @@ subscribeBtn.addEventListener('click', async function (event) {
     return;
   }
 
-  // Basic format check
-  if (!email || !validateStrictEmail(email)) {
+  // Strict email format check
+  if (!validateStrictEmail(email)) {
     Swal.fire({
       icon: 'error',
       title: 'Invalid Email!',
@@ -249,15 +252,23 @@ subscribeBtn.addEventListener('click', async function (event) {
     return;
   }
 
-  // Step 1: Verify email using Mailboxlayer
-  const accessKey = '06d82f3c06aad83e7c254d78beaf910f'; // Your API key
+  // Mailboxlayer API verification
+  const accessKey = '06d82f3c06aad83e7c254d78beaf910f';
   const verifyUrl = `https://apilayer.net/api/check?access_key=${accessKey}&email=${encodeURIComponent(email)}&smtp=1&format=1`;
 
   try {
     const response = await fetch(verifyUrl);
     const result = await response.json();
 
-    if (!result.smtp_check || result.disposable || result.score < 0.65) {
+    const trustedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
+    const domain = email.split('@')[1];
+    const isTrustedDomain = trustedDomains.includes(domain);
+
+    if (
+      result.disposable ||
+      (!result.smtp_check && !isTrustedDomain) ||
+      (!isTrustedDomain && result.score < 0.65)
+    ) {
       Swal.fire({
         icon: 'error',
         title: 'Invalid or Fake Email!',
@@ -275,7 +286,7 @@ subscribeBtn.addEventListener('click', async function (event) {
     return;
   }
 
-  // Step 2: Email is real — Send via EmailJS
+  // All clear → send to EmailJS
   btnText.classList.add('hidden');
   btnLoader.classList.remove('hidden');
 
@@ -316,18 +327,43 @@ subscribeBtn.addEventListener('click', async function (event) {
   }
 });
 
-// Strict pattern only
+// Strict regex pattern
 function validateStrictEmail(email) {
   const strictRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return strictRegex.test(email);
 }
 
+// Extract user-friendly name from email
 function extractNameFromEmail(email) {
   const namePart = email.substring(0, email.indexOf('@'));
   return namePart.replace(/[.\-_]/g, ' ').replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
 }
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // (function() {
 // emailjs.init('mAPeOxuQvhAVMfKAg'); // Tumhara public key
