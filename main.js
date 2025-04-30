@@ -263,19 +263,21 @@ subscribeBtn.addEventListener('click', async function (event) {
     const trustedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
     const domain = email.split('@')[1];
     const isTrustedDomain = trustedDomains.includes(domain);
-
-    if (
-      result.disposable ||
-      (!result.smtp_check && !isTrustedDomain) ||
-      (!isTrustedDomain && result.score < 0.65)
-    ) {
+    
+    const isFake = result.disposable || result.mx_found === false || result.did_you_mean;
+    
+    const isHighRisk =
+      (!isTrustedDomain && (!result.smtp_check || result.score < 0.65)) ||
+      (isTrustedDomain && result.score < 0.2); // Gmail etc. should be very low to block
+    
+    if (isFake || isHighRisk) {
       Swal.fire({
         icon: 'error',
         title: 'Invalid or Fake Email!',
         text: 'Please enter a real, working email address.'
       });
       return;
-    }
+    }    
   } catch (e) {
     console.error('Mailboxlayer error:', e);
     Swal.fire({
