@@ -215,8 +215,9 @@ startBtn.addEventListener("click", () => {
 
 });
 }
-(function() {
-emailjs.init('mAPeOxuQvhAVMfKAg'); // Tumhara public key
+
+(function () {
+  emailjs.init('mAPeOxuQvhAVMfKAg'); // EmailJS public key
 })();
 
 const subscribeBtn = document.getElementById('subscribe-btn');
@@ -224,80 +225,193 @@ const emailInput = document.getElementById('subscriber-email');
 const btnText = document.getElementById('btn-text');
 const btnLoader = document.getElementById('btn-loader');
 
-subscribeBtn.addEventListener('click', async function(event) {
-event.preventDefault();
+subscribeBtn.addEventListener('click', async function (event) {
+  event.preventDefault();
+  const email = emailInput.value.trim().toLowerCase();
 
-const email = emailInput.value.trim();
+  // Check if already subscribed
+  if (localStorage.getItem('isSubscribed') === 'true') {
+    Swal.fire({
+      icon: 'info',
+      title: 'Already Subscribed!',
+      text: 'You have already subscribed from this device.'
+    });
+    return;
+  }
 
-if (!validateEmail(email)) {
- Swal.fire({
-   icon: 'error',
-   title: 'Invalid Email!',
-   text: 'Please enter a valid email address.'
- });
- return;
-}
+  // Basic format check
+  if (!email || !validateStrictEmail(email)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Email!',
+      text: 'Please enter a valid email address like name@example.com.'
+    });
+    return;
+  }
 
-if (localStorage.getItem('subscribedEmail') === email) {
- Swal.fire({
-   icon: 'info',
-   title: 'Already Subscribed!',
-   text: 'You have already subscribed to GrowQuiz.'
- });
- return;
-}
+  // Step 1: Verify email using Mailboxlayer
+  const accessKey = '06d82f3c06aad83e7c254d78beaf910f'; // Your API key
+  const verifyUrl = `https://apilayer.net/api/check?access_key=${accessKey}&email=${encodeURIComponent(email)}&smtp=1&format=1`;
 
-btnText.classList.add('hidden');
-btnLoader.classList.remove('hidden');
+  try {
+    const response = await fetch(verifyUrl);
+    const result = await response.json();
 
-const userName = extractNameFromEmail(email);
+    if (!result.smtp_check || result.disposable || result.score < 0.65) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid or Fake Email!',
+        text: 'Please enter a real, working email address.'
+      });
+      return;
+    }
+  } catch (e) {
+    console.error('Mailboxlayer error:', e);
+    Swal.fire({
+      icon: 'error',
+      title: 'Verification Failed',
+      text: 'Could not verify email. Please try again later.'
+    });
+    return;
+  }
 
-const templateParams = {
- sender_name: "GrowQuiz Subscription Form",
- admin_name: "GrowQuiz Admin",
- user_name: userName,
- user_email: email,
- company_name: "GrowQuiz",
- current_date: new Date().toLocaleDateString('en-GB') // Format: DD/MM/YYYY
-};
+  // Step 2: Email is real — Send via EmailJS
+  btnText.classList.add('hidden');
+  btnLoader.classList.remove('hidden');
 
-try {
- // 1. Send email to Admin
- await emailjs.send('service_sbt7ist', 'template_g1wy2b9', templateParams);
+  const userName = extractNameFromEmail(email);
+  const templateParams = {
+    sender_name: "GrowQuiz Subscription Form",
+    admin_name: "GrowQuiz Admin",
+    user_name: userName,
+    user_email: email,
+    company_name: "GrowQuiz",
+    current_date: new Date().toLocaleDateString('en-GB')
+  };
 
- // 2. Send email to User
- await emailjs.send('service_sbt7ist', 'template_sc95a4s', templateParams);
+  try {
+    await emailjs.send('service_sbt7ist', 'template_g1wy2b9', templateParams); // Admin
+    await emailjs.send('service_sbt7ist', 'template_sc95a4s', templateParams); // User
 
- localStorage.setItem('subscribedEmail', email);
+    localStorage.setItem('isSubscribed', 'true');
+    localStorage.setItem('subscribedEmail', email);
 
- Swal.fire({
-   icon: 'success',
-   title: 'Subscribed!',
-   text: 'Thank you for subscribing to GrowQuiz.'
- });
+    Swal.fire({
+      icon: 'success',
+      title: 'Subscribed!',
+      text: 'Thank you for subscribing to GrowQuiz.'
+    });
 
- emailInput.value = '';
-} catch (error) {
- console.error('Email send failed:', error);
- Swal.fire({
-   icon: 'error',
-   title: 'Oops!',
-   text: 'Something went wrong. Please try again later.'
- });
-} finally {
- btnText.classList.remove('hidden');
- btnLoader.classList.add('hidden');
-}
+    emailInput.value = '';
+  } catch (error) {
+    console.error('Email send failed:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops!',
+      text: 'Something went wrong. Please try again later.'
+    });
+  } finally {
+    btnText.classList.remove('hidden');
+    btnLoader.classList.add('hidden');
+  }
 });
 
-function validateEmail(email) {
-const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-return regex.test(email);
+// Strict pattern only
+function validateStrictEmail(email) {
+  const strictRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return strictRegex.test(email);
 }
 
 function extractNameFromEmail(email) {
-const namePart = email.substring(0, email.indexOf('@'));
-return namePart.replace(/[.\-_]/g, ' ').replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
+  const namePart = email.substring(0, email.indexOf('@'));
+  return namePart.replace(/[.\-_]/g, ' ').replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
 }
 
 });
+
+// (function() {
+// emailjs.init('mAPeOxuQvhAVMfKAg'); // Tumhara public key
+// })();
+
+// const subscribeBtn = document.getElementById('subscribe-btn');
+// const emailInput = document.getElementById('subscriber-email');
+// const btnText = document.getElementById('btn-text');
+// const btnLoader = document.getElementById('btn-loader');
+
+// subscribeBtn.addEventListener('click', async function(event) {
+// event.preventDefault();
+
+// const email = emailInput.value.trim();
+
+// if (!validateEmail(email)) {
+//  Swal.fire({
+//    icon: 'error',
+//    title: 'Invalid Email!',
+//    text: 'Please enter a valid email address.'
+//  });
+//  return;
+// }
+
+// if (localStorage.getItem('subscribedEmail') === email) {
+//  Swal.fire({
+//    icon: 'info',
+//    title: 'Already Subscribed!',
+//    text: 'You have already subscribed to GrowQuiz.'
+//  });
+//  return;
+// }
+
+// btnText.classList.add('hidden');
+// btnLoader.classList.remove('hidden');
+
+// const userName = extractNameFromEmail(email);
+
+// const templateParams = {
+//  sender_name: "GrowQuiz Subscription Form",
+//  admin_name: "GrowQuiz Admin",
+//  user_name: userName,
+//  user_email: email,
+//  company_name: "GrowQuiz",
+//  current_date: new Date().toLocaleDateString('en-GB') // Format: DD/MM/YYYY
+// };
+
+// try {
+//  // 1. Send email to Admin
+//  await emailjs.send('service_sbt7ist', 'template_g1wy2b9', templateParams);
+
+//  // 2. Send email to User
+//  await emailjs.send('service_sbt7ist', 'template_sc95a4s', templateParams);
+
+//  localStorage.setItem('subscribedEmail', email);
+
+//  Swal.fire({
+//    icon: 'success',
+//    title: 'Subscribed!',
+//    text: 'Thank you for subscribing to GrowQuiz.'
+//  });
+
+//  emailInput.value = '';
+// } catch (error) {
+//  console.error('Email send failed:', error);
+//  Swal.fire({
+//    icon: 'error',
+//    title: 'Oops!',
+//    text: 'Something went wrong. Please try again later.'
+//  });
+// } finally {
+//  btnText.classList.remove('hidden');
+//  btnLoader.classList.add('hidden');
+// }
+// });
+
+// function validateEmail(email) {
+// const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// return regex.test(email);
+// }
+
+// function extractNameFromEmail(email) {
+// const namePart = email.substring(0, email.indexOf('@'));
+// return namePart.replace(/[.\-_]/g, ' ').replace(/\d+/g, '').replace(/\s+/g, ' ').trim();
+// }
+
+// });
