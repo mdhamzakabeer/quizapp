@@ -87,6 +87,7 @@ form.addEventListener('submit', function(e) {
   localStorage.setItem('user', JSON.stringify({
     name,
     email,
+    password,
     otp,
     login: false
   }));
@@ -96,10 +97,9 @@ form.addEventListener('submit', function(e) {
     receiver_email: email,
     name: name,
     otp: otp,
-    password: password // 👈 Add this line
+    password: password
   };
   
-
   emailjs.send('service_819r3au', 'template_3es8n4o', templateParams)
     .then(function(response) {
       console.log('SUCCESS!', response.status, response.text);
