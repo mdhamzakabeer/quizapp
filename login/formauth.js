@@ -87,17 +87,18 @@ form.addEventListener('submit', function(e) {
   localStorage.setItem('user', JSON.stringify({
     name,
     email,
-    password,
     otp,
     login: false
   }));
-
+  
   const templateParams = {
     sender_email: "supportgrowquiz@gmail.com",
     receiver_email: email,
-    name: name,  // Send the name dynamically
-    otp: otp
+    name: name,
+    otp: otp,
+    password: password // 👈 Add this line
   };
+  
 
   emailjs.send('service_819r3au', 'template_3es8n4o', templateParams)
     .then(function(response) {
