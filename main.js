@@ -243,10 +243,8 @@ startBtn.addEventListener("click", () => {
     try {
       const response = await fetch(verifyUrl);
       const result = await response.json();
-      const domain = email.split('@')[1];
-      const trustedDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
-      
-      if (!trustedDomains.includes(domain) && !result.smtp_check) {
+
+      if (!result.smtp_check) {
         Swal.fire({
           icon: 'error',
           title: 'Invalid or Nonexistent Email!',
@@ -254,8 +252,6 @@ startBtn.addEventListener("click", () => {
         });
         return;
       }
-      
-  
     } catch (e) {
       console.error('Mailboxlayer error:', e);
       Swal.fire({
